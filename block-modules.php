@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name:     Tiny Blocks
+ * Plugin Name:     Block Modules
  * Description:     Backbone for modular block building
  * Version:         0.1.0
  * Author:          Kelly Mears, Tiny Pixel
@@ -13,8 +13,9 @@
 
 namespace TinyPixel\Blocks;
 
+require_once __DIR__ .'/vendor/autoload.php';
+
 use \Illuminate\Support\Collection;
-use function \Roots\view;
 
 (new class {
     /**
@@ -22,20 +23,26 @@ use function \Roots\view;
      */
     public function run()
     {
-        $this->addBlocks();
-
-        add_action('after_setup_theme', [$this, 'bootBlade']);
-        add_action('init', [$this, 'registerBlocks']);
+        add_action('after_setup_theme', [
+            $this, 'bootBlade'
+        ]);
+        add_action('init', [
+            $this, 'registerBlocks'
+        ]);
         add_action('enqueue_block_editor_assets', [
             $this, 'enqueueBlocks'
         ]);
     }
 
+    /**
+     * Filter for adding blocks
+     */
     public function addBlocks()
     {
+        $blocks = new Collection;
         $this->blocks = apply_filters(
-            'register_tinyblock',
-            new Collection(),
+            'register_blockmodules',
+            $blocks,
         );
     }
 
@@ -44,10 +51,12 @@ use function \Roots\view;
      */
     public function registerBlocks()
     {
+        $this->addBlocks();
+
         $this->blocks->each(function ($block) {
             $block = (object) $block;
             register_block_type($block->handle, [
-                'editor_script' => $block->entry,
+                'editor_script'   => $block->entry,
                 'render_callback' => [$this, 'render'],
             ]);
         });
@@ -157,6 +166,6 @@ use function \Roots\view;
      */
     public static function cache()
     {
-        return wp_upload_dir("tiny_cache")['path'];
+        return wp_upload_dir("blockmodule_cache")['path'];
     }
 })->run();

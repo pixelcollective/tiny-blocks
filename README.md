@@ -1,6 +1,12 @@
-# Tiny Block Modules
+# Block Modules
 
-I don't like putting all my blocks in one plugin. I made this helper so I can separate blocks or small sets of blocks into individuated plugins. This will also let you render blocks using Blade even if you don't have access to it otherwise.
+Plugin backbone for modular block building.
+
+`Block Modules` allows you to separate blocks or small sets of blocks into individuated plugins, should you not want to put all of your eggs into one basket. All of these blocks are rendered using the Laravel Blade templating engine. If you want to know more about the general idea, check out my [Block Compose library](https://github.com/kellymears/blockcompose). This is the same idea, but using an arguably safer, distributed appproach.
+
+This plugin also lets you render blocks using Blade _even if you don't have access to it otherwise_ (as in: outside of a Roots context).
+
+Both this and `Block Compose` are works in progress. `BlockCompose` is intended for use with [Roots` Clover plugin framework](https://roots.io/clover/), which is still in alpha. It's likely that primary development of this plugin will be completed sooner than that.
 
 ## Usage
 
@@ -22,7 +28,7 @@ The important bit is that the registration process assumes your blade partials a
 ## Register a block
 
 ```php
-add_filter('register_tinyblock', function ($blocks) {
+add_filter('register_blockmodules', function ($blocks) {
     $blocks->push([
         'plugin' => 'example-block',
         'handle' => 'example/block',
@@ -47,4 +53,6 @@ If `Roots\view()` is available the blade templates will be rendered using that. 
 
 Certainly. Example usage is included in the `example-block` dir of this repo.
 
-km 2019 // licensed MIT
+&copy; 2019 tiny pixel collective, llc
+
+licensed MIT

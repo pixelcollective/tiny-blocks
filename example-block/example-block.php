@@ -7,7 +7,7 @@
 
 version_compare($GLOBALS['wp_version'], '5.0', '<') ?:
 
-  add_filter('register_tinyblock', function ($blocks) {
+  add_filter('register_blockmodules', function ($blocks) {
       $blocks->push([
           'plugin' => 'example-block',
           'handle' => 'example/block',

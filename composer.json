@@ -1,0 +1,38 @@
+{
+  "name": "tinypixel/block-modules",
+  "type": "wordpress-plugin",
+  "version": "0.1.0",
+  "description": "Simple lightweight button for pros to style on",
+  "keywords": [
+    "laravel",
+    "blade",
+    "template",
+    "wordpress",
+    "gutenberg",
+    "blocks"
+  ],
+  "require": {
+    "php": ">=5",
+    "composer/installers": "v1.4",
+    "tightenco/collect": "^5.8",
+    "eftec/bladeone": "^3.24"
+  },
+  "autoload": {
+    "files": [
+      "vendor/tightenco/collect/src/Collect/Support/helpers.php",
+      "vendor/tightenco/collect/src/Collect/Support/alias.php"
+    ],
+    "psr-4": {
+      "TinyPixel\\Blocks\\": "./"
+    }
+  },
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Kelly Mears",
+      "homepage": "https://tinypixel.dev"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true
+}
