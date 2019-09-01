@@ -1,0 +1,25 @@
+// @wordpress
+import { __ } from '@wordpress/i18n'
+import { registerBlockType } from '@wordpress/blocks'
+
+// components
+import { dummyBlockNameEdit } from './components'
+
+// block attributes
+const attr = {
+  text: {
+    type: `string`,
+  },
+  media: {
+    type: `object`
+  },
+}
+
+registerBlockType(`dummyNamespace/dummyBlockName`, {
+  title: __(`dummyBlockTitle`),
+  category: `common`,
+  icon: `plugin`,
+  attributes: attr,
+  edit: dummyBlockNameEdit,
+  save: () => null,
+})
