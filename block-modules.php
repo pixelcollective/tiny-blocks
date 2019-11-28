@@ -2,11 +2,11 @@
 /**
  * Plugin Name:     Block Modules
  * Description:     Backbone for modular block building
- * Version:         0.1.0
- * Author:          Kelly Mears, Tiny Pixel
+ * Version:         0.3.0
+ * Author:          Tiny Pixel Collective
  * Author URI:      https://tinypixel.dev
  * License:         MIT
- * Text Domain:     tinyblocks
+ * Text Domain:     block-modules
  */
 namespace TinyPixel\Modules;
 

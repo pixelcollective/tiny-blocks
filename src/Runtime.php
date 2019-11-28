@@ -13,8 +13,8 @@ use TinyPixel\Modules\Runtime;
 /**
  * Block modules runtime
  *
- * @since   1.2.0
- * @version 1.2.0
+ * @since   0.0.1
+ * @version 0.3.0
  * @license MIT
  * @author  Kelly Mears <developers@tinypixel.dev>
  */
