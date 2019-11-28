@@ -79,9 +79,17 @@ At minimum, a block configuration should specify
 
 - `handle`: The block handle used in JS.
 
-This will work assuming the layout of the plugin is handled with the exact same structure as the one illustrated at the beginning of this document. However, you can optionally specify many other options.
+This will work assuming the layout of the plugin is handled with the exact same structure as the one illustrated at the beginning of this document. As in:
 
-As an example, here is a plugin with blocks nested in subdirectories.
+- `/dist/scripts/editor.js`
+- `/dist/scripts/public.js`
+- `/dist/styles/editor.css`
+- `/dist/styles/public.css`
+- `/resources/views/block.blade.php`
+
+However, you can optionally specify many other options and change this up, if you're inclined.
+
+As an example, here is a plugin with blocks nested in subdirectories:
 
 ```php
 /**
