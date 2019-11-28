@@ -11,24 +11,24 @@ The following structure conforms to the default values used by the registrations
 ```bash
 ├── block.php                # Registration filters
 ├── dist                     # Compiled assets
-|   ├── scripts
-|   |   ├── editor.js        # Compiled editor scripts
-|   |   └── public.js        # Compiled public scripts
-|   └── styles
-|       ├── editor.css       # Compiled editor styles
-|       └── public.css       # Compiled public styles
+│   ├── scripts
+│   │   ├── editor.js        # Compiled editor scripts
+│   │   └── public.js        # Compiled public scripts
+│   └── styles
+│       ├── editor.css       # Compiled editor styles
+│       └── public.css       # Compiled public styles
 ├── package.json
 ├── phpcs.xml
 ├── resources
 │   ├── assets
 │   │   ├── scripts
 │   │   │   ├── editor.js    # Block editor scripts
-|   |   |   └── public.js    # Public scripts
+│   │   │   └── public.js    # Public scripts
 │   │   └── styles
 │   │   │   ├── editor.scss  # Block editor styles
-|   |   |   └── public.scss  # Public styles
+│   │   │   └── public.scss  # Public styles
 │   └── views
-|       └── block.blade.php  # Block template
+│       └── block.blade.php  # Block template
 ├── webpack.mix.js
 └── yarn.lock
 ```
