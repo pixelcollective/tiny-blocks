@@ -24,6 +24,6 @@ use TinyPixel\Modules\Runtime;
      */
     public function __invoke(string $baseDir) : void
     {
-        $this->plugin = new Runtime($baseDir);
+        Runtime::getInstance($baseDir);
     }
 })(realpath(__DIR__ . '/..'));

@@ -1,24 +1,28 @@
 <?php
+
 namespace TinyPixel\Modules;
 
-use \add_action;
-use \register_block_type;
+use function \add_action;
+use function \register_block_type;
 
 use Illuminate\Support\Collection;
 use eftec\bladeone\BladeOne as Blade;
 
 /**
- * Block Modules
+ * Registration
  *
  * @since   1.2.0
  * @version 1.2.0
  * @license MIT
  * @author  Kelly Mears <developers@tinypixel.dev>
  */
-class Modules
+class Registration
 {
     /** @var string baseDir */
     public static $baseDir;
+
+    /** @var \Illuminate\Support\Collection Collected plugins */
+    public static $plugins;
 
     /** @var \Illuminate\Support\Collection Collected blocks */
     public static $blocks;
@@ -34,13 +38,17 @@ class Modules
      * @param string                        base directory
      */
     public function __construct(
+        string $baseDir,
         \eftec\bladeone\BladeOne $blade,
         \Illuminate\Support\Collection $blocks,
-        string $baseDir
+        \Illuminate\Support\Collection $plugins
     ) {
+        self::$baseDir    = $baseDir;
         self::$viewEngine = $blade;
         self::$blocks     = $blocks;
-        self::$baseDir    = $baseDir;
+        self::$plugins    = $plugins;
+
+        return $this;
     }
 
     /**
@@ -50,8 +58,8 @@ class Modules
      */
     public function registerViews() : void
     {
-        self::$blocks->each(function ($block) {
-            $this->registerView($block);
+        self::$blocks->each(function ($block, $plugin) {
+            $this->registerView($block, $plugin);
         });
     }
 
@@ -61,11 +69,11 @@ class Modules
      * @param  array $blockName
      * @return void
      */
-    public function registerView(\Illuminate\Support\Collection $block) : void
+    public function registerView(\Illuminate\Support\Collection $block, string $plugin) : void
     {
         register_block_type($block->get('handle'), [
-            'render_callback' => function ($attr, $content) use ($block) {
-                $view = [$this->view($block), [
+            'render_callback' => function ($attr, $content) use ($block, $plugin) {
+                $view = [$this->view($plugin, $block), [
                     'attr'    => (object) $attr,
                     'content' => $content,
                 ]];
@@ -81,27 +89,14 @@ class Modules
      * @param  array $block
      * @return string
      */
-    public function view(\Illuminate\Support\Collection $block) : string
+    public function view(string $plugin, \Illuminate\Support\Collection $block) : string
     {
         return sprintf(
-            "%s/%s/%s",
-            $block->get('plugin') ?: basename($block->get('dir')),
-            $block->get('views')  ?: 'src/blade',
-            $block->get('view')   ?: 'render.blade.php'
-        );
-    }
-
-    /**
-     * Supply user data for blade directives
-     *
-     * @param  \WP_User $user
-     * @return void
-     */
-    public function setUser(\WP_User $user) : void
-    {
-        (!$user->ID===0) && self::$viewEngine->setAuth(
-            $user->data->user_nicename,
-            $user->roles[0]
+            "%s/%s%s/%s",
+            self::$plugins[$plugin]['dir'],
+            $block->get('dir') ? "{$block->get('dir')}/" : null,
+            $block->get('filepaths')['views'] ?: 'resources/views',
+            $block->get('view') ?: 'block',
         );
     }
 }
