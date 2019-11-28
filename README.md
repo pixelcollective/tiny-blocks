@@ -6,7 +6,7 @@ This plugin is a work-in-progress.
 
 ## Example Plugin structure
 
-The following structure conforms to the default values used by the registrations classes.
+The following structure conforms to the default values used by the registration classes.
 
 ```bash
 ├── block.php                # Registration filters
