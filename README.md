@@ -54,19 +54,17 @@ The `blockmodules` filter passes an instance of `BlockModules\Registrar`. This i
 | `$pluginName`                      | string | Used to reference the plugin |
 | `$configuration`                   | array  | Configure the plugin         |
 
-At minimum, the `$configuration` array must specify:
-
-- `path`: The path to the plugin.
-- `dir`: The plugin dir name.
+Currently, the only configuration key used by the framework is `dir`.
 
 ```php
 add_filter('blockmodules', function ($registrar) {
   $registrar->addPlugin('tiny-pixel-blocks', [
-    'path'  => dirname(__FILE__),
-    'dir'   => 'tiny-pixel-blocks',
+    'dir' => 'tiny-pixel-blocks',
   ]);
 });
 ```
+
+`dir` is the path to the pluign relative to the framework's base path (the default framework base path resolves to the plugins directory, but this is configurable with the `blockmodules_base` filter, detailed later in this document.)
 
 ## Register a block
 
