@@ -111,7 +111,7 @@ class Registrar
      */
     public function registerUser() : void
     {
-        if (! $this->runtime->filter('disable_user_blockmodules', false)) {
+        if (! $this->runtime->filter('blockmodules_disable_user', false)) {
             $this->registerUserDirectives(\wp_get_current_user());
         }
     }

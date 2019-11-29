@@ -69,9 +69,9 @@ class Runtime
     public function config()
     {
         $this->config = [
-            $this->baseDir   = $this->filter('blockmodules_basepath',  $this->baseDir),
-            $this->cachePath = $this->filter('blockmodules_cachepath', WP_CONTENT_DIR . '/uploads/block-modules'),
-            $this->debug     = $this->filter('blockmodules_debug',     Blade::MODE_AUTO),
+            $this->baseDir   = $this->filter('blockmodules_base',  $this->baseDir),
+            $this->cachePath = $this->filter('blockmodules_cache', wp_upload_dir()['basedir'] . '/block/cache'),
+            $this->debug     = $this->filter('blockmodules_debug', Blade::MODE_AUTO),
         ];
     }
 

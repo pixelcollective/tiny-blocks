@@ -26,4 +26,4 @@ use TinyPixel\Modules\Runtime;
     {
         Runtime::getInstance($baseDir);
     }
-})(realpath(__DIR__ . '/..'));
+})(WP_PLUGIN_DIR);

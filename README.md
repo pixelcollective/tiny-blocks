@@ -75,21 +75,27 @@ add_filter('blockmodules', function ($registrar) {
 });
 ```
 
-At minimum, a block configuration should specify
+The first parameter specifies the name given to the plugin using `\Registrar\addPlugin()`. The second parameter is a keyed array used for configuring the block. At minimum, this configuration should specify:
 
 - `handle`: The block handle used in JS.
 
-This will work assuming the layout of the plugin is handled with the exact same structure as the one illustrated at the beginning of this document. As in:
+This will work assuming the file structure mirrors the one illustrated at the beginning of this document:
 
-- `/dist/scripts/editor.js`
-- `/dist/scripts/public.js`
-- `/dist/styles/editor.css`
-- `/dist/styles/public.css`
-- `/resources/views/block.blade.php`
+| File                               | Description             | Notes    |
+|------------------------------------|-------------------------|----------|
+| `/plugin.php`                      | Plugin registration     |          |
+| `/resources/views/block.blade.php` | Block view              |          |
+| `/dist/scripts/editor.js`          | Compiled editor scripts |          |
+| `/dist/scripts/editor.asset.php`   | WP dependency manifest  |          |
+| `/dist/scripts/public.js`          | Compiled public scripts | Optional |
+| `/dist/styles/editor.css`          | Compiled public styles  | Optional |
+| `/dist/styles/public.css`          | Compiled public styles  | Optional |
 
-However, you can optionally specify many other options and change this up, if you're inclined.
+## Configuration
 
-As an example, here is a plugin with blocks nested in subdirectories:
+In addition to the minimal implementation provided by the default configuration, there are numerous configuration options which can be specified in the keyed array passed as the secondary parameter to `Registrar\addBlock()`.
+
+As an example, here is a plugin with blocks nested in subdirectories, with comments indicating the function of each key/value:
 
 ```php
 /**
@@ -124,10 +130,66 @@ add_filter('blockmodules', function ($registrar) {
 
 ## Views
 
-Views have two variables made available to them by default: `$attr` and `$content`.
+The framework provides block data to the view via two variables: `$attr` and `$content`.
 
-- `$attr` is an object containing all the block attributes.
-- `$content` contains nested markup from `InnerBlocks`.
+### Block attributes: `$attr`
+
+Attributes defined in the block's JS are passed to the view with `$attr`. Attributes can be single or multi-dimensional.
+
+**`$attr->heading`**
+
+```js
+const attributes = {
+  heading: {
+    type: `string`,
+    default: `Hello, world.`,
+  },
+}
+```
+
+**`$attr->image['url']`**
+
+```js
+const attributes = {
+  image: {
+    type: `object`,
+  },
+}
+```
+
+### Block InnerContent: `$content`
+
+Nested markup from `<InnerBlocks />` is passed to the view with `$content`.
+
+### Directives
+
+Most of Laravel Blade's helper directives are available to a block view (`@dd`, `@isset`, `@if`, `@foreach`, etc.). For a complete list see the documentation for [BladeOne](https://github.com/EFTEC/BladeOne).
+
+There are also some additional block-specific directives:
+
+#### `@auth` and `@endauth`
+
+`@auth` and `@endauth` function as a control structure, only rendering their contents if a user is logged-in.
+
+```php
+@auth
+  <h2>Hello, logged in user!</h2>
+@endauth
+```
+
+Additionally, a role can be passed as a secondary parameter:
+
+```php
+@auth('admin')
+  <h2>Hello, administrator!</h2>
+@endauth
+```
+
+### Example view
+
+The following view presents single and multidimensional attributes along with `<InnerBlocks />` content.
+
+**`/resources/views/block.blade.php`**
 
 ```php
 @isset($attr->heading)
@@ -136,10 +198,8 @@ Views have two variables made available to them by default: `$attr` and `$conten
   </h2>
 @endif
 
-@isset($attr->accentText)
-  <span>
-    {!! $attr->accentText !!}
-  </span>
+@isset($attr->image)
+  <img src="{!! \get_attachment_url($attr->image['id']) !!}" alt="{!! $attr->image['alt'] !!}" />
 @endif
 
 @isset($content)
@@ -149,25 +209,33 @@ Views have two variables made available to them by default: `$attr` and `$conten
 @endif
 ```
 
-## Additional filters
+## Global configuration filters
+
+These filters effect all registered blocks.
 
 Modify where cached views are stored:
 
+> Default: `wp_upload_dir()['basedir'] . '/uploads/block/cache'`
+
 ```php
 add_filter('blockmodules_cache', function ($cachePath) {
-  return '/cache/to/this/dir';
+  return '/srv/www/mysite.com/current/app/custom/view/cache/';
 });
 ```
 
-Change the base directory used to located view templates:
+Change the block-modules base directory.
+
+> Default: `WP_PLUGIN_DIR`
 
 ```php
-add_filter('blockmodules_views', function ($basePath) {
+add_filter('blockmodules_base', function ($basePath) {
   return '/views/relative/from/this/dir';
 });
 ```
 
 Disable `@user` and `@guest` directives
+
+> Default: `false`
 
 ```php
 add_filter('blockmodules_disable_user', function () {
@@ -176,6 +244,8 @@ add_filter('blockmodules_disable_user', function () {
 ```
 
 Enable debug mode
+
+> Default `false`
 
 ```php
 add_filter('blockmodules_debug', function () {
