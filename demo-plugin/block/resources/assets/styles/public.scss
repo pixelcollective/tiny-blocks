@@ -1,0 +1,21 @@
+$primary: #0000ff;
+
+.wp-block-tiny-pixel-block {
+  display: flex;
+  flex-direction: row;
+
+  .tiny-pixel-block__column-a {
+    flex: 2;
+
+    &__heading {
+      display: inline-block;
+      font-size: 2rem;
+      width: 100%;
+      border-bottom: 2px solid rgba(0, 0, 4, 0.598);
+    }
+  }
+
+  .tiny-pixel-block__column-b {
+    flex: 1;
+  }
+}
