@@ -114,28 +114,29 @@ add_filter('blockmodules', function ($registrar) {
     ]);
 
     $registrar->addBlock('tiny-pixel-blocks', [
-        'handle'    => 'tiny-pixel/block',
-        'dir'       => 'block',            // Path to block (relative to plugin root)
-        'filepaths' => [
-            'views' => 'resources/views',  // Path to block views (relative to block root)
-            'dist'  => 'dist',             // Path to block dist (relative to block root)
-        ],
-        'editor'  => [
-            'js'  => 'scripts/editor',     // Path to editor scripts (relative to dist)
-            'css' => 'styles/editor',      // Path to editor styles (relative to dist)
-        ],
-        'public'  => [
-            'js'  => 'scripts/public',     // Path to public scripts (relative to dist)
-            'css' => 'styles/public',      // Path to public styles (relative to dist)
-        ],
-        'view' => 'block.blade.php',       // Filename of the main view file
-    ]);
+      'handle'    => 'tiny-pixel/block',
+      'dir'       => 'block',            // Path to block (relative to plugin root)
+      'filepaths' => [
+        'views' => 'resources/views',  // Path to block views (relative to block root)
+        'dist'  => 'dist',             // Path to block dist (relative to block root)
+      ],
+      'editor'  => [
+        'js'  => 'scripts/editor',     // Path to editor scripts (relative to dist)
+        'css' => 'styles/editor',      // Path to editor styles (relative to dist)
+      ],
+      'public'  => [
+        'js'  => 'scripts/public',     // Path to public scripts (relative to dist)
+        'css' => 'styles/public',      // Path to public styles (relative to dist)
+      ],
+      'view'   => 'block.blade.php',       // Filename of the main view file
+      'layout' => 'block-modules/resources/views/layouts/block.blade.php'
+  ]);
 });
 ```
 
 ## Views
 
-The framework provides block data to the view via two variables: `$attr` and `$content`.
+The framework provides block data to the view via the following variables: `$attr`, `$layout`, `$content` and `$classname`.
 
 ### Block attributes: `$attr`
 
@@ -162,9 +163,32 @@ const attributes = {
 }
 ```
 
+If your block supports `alignment`, you will find `align` here as well.
+
 ### Block InnerContent: `$content`
 
 Nested markup from `<InnerBlocks />` is passed to the view with `$content`.
+
+### Block master layout reference: `$layout`
+
+This is a reference to the block's master layout file. By default this file is `block-modules/resources/views/layouts/block.blade.php`.
+
+It can be used with the `@extends` Blade directive.
+
+The default layout wraps the block view in a div with the standard block classname and alignment classes.
+
+You can also supply your own by specifying a `layout` key in during block registration:
+
+```php
+$registrar->addBlock('tiny-pixel-blocks', [
+  'handle' => 'tiny-pixel/block',
+  'layout' => 'block-modules/resources/views/layouts/block.blade.php'
+]);
+```
+
+### Block classname: `$classname`
+
+This is just a preformulated block classname.
 
 ### Directives
 
