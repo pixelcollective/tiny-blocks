@@ -64,7 +64,7 @@ add_filter('blockmodules', function ($registrar) {
 });
 ```
 
-`dir` is the path to the pluign relative to the framework's base path (default is the plugins directory, but this is configurable with the `blockmodules_base` filter, see the section on filters below).
+`dir` is the path to the pluign relative to the framework's base path (the default framework base path resolves to the plugins directory, but this is configurable with the `blockmodules_base` filter, detailed later in this document.)
 
 ## Register a block
 
