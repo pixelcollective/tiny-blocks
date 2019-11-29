@@ -1,0 +1,23 @@
+$primary: #0000ff;
+$system: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif";
+
+.wp-block-tiny-pixel-block {
+  display: flex;
+  flex-direction: row;
+
+  &__column-a {
+    flex: 1;
+
+    &-svg {
+      fill: $primary;
+    }
+  }
+
+  &__column-b {
+    flex: 1;
+
+    &-heading {
+      font-family: $system;
+    }
+  }
+}
