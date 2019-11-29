@@ -71,16 +71,37 @@ class Registration
      */
     public function registerView(\Illuminate\Support\Collection $block, string $plugin) : void
     {
+        add_filter('render_block_data', function ($block, $source_block) {
+            $block['attrs'] = Collection::make($block['attrs'])->map(function ($attr) {
+                return is_array($attr) ? (object) $attr : $attr;
+            })->toArray();
+
+            return $block;
+        }, 10, 2);
+
         register_block_type($block->get('handle'), [
             'render_callback' => function ($attr, $content) use ($block, $plugin) {
                 $view = [$this->view($plugin, $block), [
-                    'attr'    => (object) $attr,
-                    'content' => $content,
+                    'attr'      => (object) $attr,
+                    'content'   => $content,
+                    'layout'    => $block->get('layout') ?: 'block-modules/resources/views/layouts/block.blade.php',
+                    'classname' => $block->get('classname') ?: $this->classname($block),
                 ]];
 
                 return self::$viewEngine->run(...$view);
             }
         ]);
+    }
+
+    /**
+     * Returns block default classname
+     *
+     * @param  \Illuminate\Support\Collection block
+     * @return string                         classname
+     */
+    public function classname($block) : string
+    {
+        return str_replace('/', '-', $block->get('handle'));
     }
 
     /**

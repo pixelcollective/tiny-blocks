@@ -42,6 +42,7 @@ class Runtime
             $this->blade = $this->useBladeOne();
             $this->registryInit();
             $this->registerModules();
+            $this->registerDirectives();
         });
 
         add_action('enqueue_block_editor_assets', [$this, 'enqueueEditorAssets']);
@@ -97,6 +98,11 @@ class Runtime
         $this->filter('blockmodules', $this->registrar);
 
         $this->modules  = $this->registrar->registerAll();
+    }
+
+    public function registerDirectives() : void
+    {
+        new Directives($this->blade, $this->config);
     }
 
     /**
