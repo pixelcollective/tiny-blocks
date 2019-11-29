@@ -4,6 +4,10 @@ This plugin is a backbone for building modular blocks with Blade templating supp
 
 This plugin is a work-in-progress.
 
+## Check out a demo plugin
+
+[/demo-plugin](https://github.com/pixelcollective/block-modules/tree/master/demo-plugin).
+
 ## Example Plugin structure
 
 The following structure conforms to the default values used by the registration classes.
