@@ -283,7 +283,7 @@ class Runtime
     }
 
     /**
-     * Get plugin base
+     * Get block directory
      *
      * @param  Illuminate\Support\Collection  block
      * @return string                         plugin name
@@ -294,25 +294,25 @@ class Runtime
     }
 
     /**
-     * Get block base
+     * Get plugin base path
      *
      * @param  Illuminate\Support\Collection  block
      * @return string                         block name
      */
-    protected function getPluginPath(string $pluginName) : string
+    protected function getPluginPath(string $plugin) : string
     {
-        return $this->modules->plugins[$pluginName]['file'];
+        return sprintf('%s/%s', $this->baseDir, $this->getPluginDirname($plugin));
     }
 
     /**
-     * Get block base
+     * Get plugin dirname
      *
-     * @param  Illuminate\Support\Collection  block
+     * @param  Illuminate\Support\Collection  plugin
      * @return string                         block name
      */
-    protected function getPluginDirname(string $pluginName) : string
+    protected function getPluginDirname(string $plugin) : string
     {
-        return $this->modules->plugins[$pluginName]['dir'];
+        return $this->modules->plugins[$plugin]['dir'];
     }
 
     /**

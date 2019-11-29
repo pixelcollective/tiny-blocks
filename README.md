@@ -47,7 +47,17 @@ The `blockmodules` filter passes an instance of `BlockModules\Registrar`. This i
 
 ## Register a plugin
 
-> `Registrar\addPlugin(string $pluginName, array $configuration)`
+> `$registrar->addPlugin($pluginName, [...$configuration])`
+
+| Parameter                          | Type   | Description                  |
+|------------------------------------|--------|------------------------------|
+| `$pluginName`                      | string | Used to reference the plugin |
+| `$configuration`                   | array  | Configure the plugin         |
+
+At minimum, the `$configuration` array must specify:
+
+- `path`: The path to the plugin.
+- `dir`: The plugin dir name.
 
 ```php
 add_filter('blockmodules', function ($registrar) {
@@ -58,28 +68,28 @@ add_filter('blockmodules', function ($registrar) {
 });
 ```
 
-At minimum, a plugin configuration should specify
-
-- `path`: The path to the plugin.
-- `dir`: The plugin dir name.
-
 ## Register a block
 
 > `Registrar\addBlock(string $pluginName, array $configuration)`
 
-```php
-add_filter('blockmodules', function ($registrar) {
-  $registrar->addBlock('tiny-pixel-blocks', [
-    'handle'    => 'tiny-pixel/block',
-  ]);
-});
-```
+| Parameter        | Type   | Description               |
+|------------------|--------|---------------------------|
+| `$pluginName`    | string | The plugin reference name |
+| `$configuration` | array  | Block configuration       |
 
 The first parameter specifies the name given to the plugin using `\Registrar\addPlugin()`. The second parameter is a keyed array used for configuring the block. At minimum, this configuration should specify:
 
 - `handle`: The block handle used in JS.
 
-This will work assuming the file structure mirrors the one illustrated at the beginning of this document:
+```php
+add_filter('blockmodules', function ($registrar) {
+  $registrar->addBlock('tiny-pixel-blocks', [
+    'handle' => 'tiny-pixel/block',
+  ]);
+});
+```
+
+This minimal implementation works _assuming the file structure of the block mirrors the framework's default expectations_, illustrated at the beginning of this document and in the following table:
 
 | File                               | Description             | Notes    |
 |------------------------------------|-------------------------|----------|
@@ -90,8 +100,6 @@ This will work assuming the file structure mirrors the one illustrated at the be
 | `/dist/scripts/public.js`          | Compiled public scripts | Optional |
 | `/dist/styles/editor.css`          | Compiled public styles  | Optional |
 | `/dist/styles/public.css`          | Compiled public styles  | Optional |
-
-## Configuration
 
 In addition to the minimal implementation provided by the default configuration, there are numerous configuration options which can be specified in the keyed array passed as the secondary parameter to `Registrar\addBlock()`.
 
@@ -104,7 +112,6 @@ As an example, here is a plugin with blocks nested in subdirectories, with comme
  */
 add_filter('blockmodules', function ($registrar) {
     $registrar->addPlugin('tiny-pixel-blocks', [
-        'file'  => dirname(__FILE__),
         'dir'  => 'tiny-pixel-blocks',
     ]);
 
@@ -213,7 +220,7 @@ The following view presents single and multidimensional attributes along with `<
 
 These filters effect all registered blocks.
 
-Modify where cached views are stored:
+### Modify where cached views are stored:
 
 > Default: `wp_upload_dir()['basedir'] . '/uploads/block/cache'`
 
@@ -223,7 +230,15 @@ add_filter('blockmodules_cache', function ($cachePath) {
 });
 ```
 
-Change the block-modules base directory.
+For example, when storing uploads on Amazon S3 or Digital Ocean Spaces, the default cache path is actually an `s3://` url, which causes problems. In order to store views on the local filesystem, you could apply a filter which doesn't reference `wp_upload_dir()`:
+
+```php
+add_filter('blockmodules_cache', function ($cacheDir) {
+    return realpath(__DIR__ .'/../../uploads/blocks/cache/');
+});
+```
+
+### Change the block-modules base directory.
 
 > Default: `WP_PLUGIN_DIR`
 
@@ -233,7 +248,7 @@ add_filter('blockmodules_base', function ($basePath) {
 });
 ```
 
-Disable `@user` and `@guest` directives
+### Disable `@user` and `@guest` directives
 
 > Default: `false`
 
@@ -243,7 +258,7 @@ add_filter('blockmodules_disable_user', function () {
 });
 ```
 
-Enable debug mode
+### Enable debug mode
 
 > Default `false`
 
