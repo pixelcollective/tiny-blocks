@@ -16,7 +16,10 @@ use \eftec\bladeone\BladeOne;
  */
 class Registrar
 {
-    /** @var \TinyPixel\Modules\Registrar */
+    /**
+     * Singleton pattern instance
+     * @var \TinyPixel\Modules\Registrar
+     */
     public static $instance;
 
     /**
@@ -42,7 +45,7 @@ class Registrar
     }
 
     /**
-     * Class singleton constructor
+     * Singleton constructor
      *
      * @return \TinyPixel\Modules\Runtime plugin runtime
      * @param  \eftec\bladeone\BladeOne   view engine

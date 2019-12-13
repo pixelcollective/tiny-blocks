@@ -1,19 +1,19 @@
 <?php
 /**
- * Plugin Name:     Block Modules
- * Description:     Backbone for modular block building
+ * Plugin Name:     TinyBlocks
+ * Description:     Slim backbone for modular block building
  * Version:         0.3.0
  * Author:          Tiny Pixel Collective
  * Author URI:      https://tinypixel.dev
  * License:         MIT
  * Text Domain:     block-modules
  */
-namespace TinyPixel\Modules;
+namespace TinyBlocks;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
 use \WP_Error;
-use TinyPixel\Modules\Runtime;
+use TinyBlocks\Application;
 
 (new class {
     /**
@@ -24,6 +24,6 @@ use TinyPixel\Modules\Runtime;
      */
     public function __invoke(string $baseDir) : void
     {
-        Runtime::getInstance($baseDir);
+        Application::getInstance(__DIR__ . '/config/application.php');
     }
 })(WP_PLUGIN_DIR);
