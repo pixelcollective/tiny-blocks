@@ -3,13 +3,14 @@
 namespace TinyBlocks\Base;
 
 use Illuminate\Support\Collection;
-use TinyBlocks\Contracts\AssetsManagerInterface;
+use TinyBlocks\Contracts\AssetsInterface;
+
 /**
- * Abstract Assets Manager
+ * Abstract Assets
  *
  * @package TinyBlocks
  */
-abstract class AssetsManager implements AssetsManagerInterface
+abstract class Assets implements AssetsInterface
 {
     public function enqueueEditorAssets()
     {

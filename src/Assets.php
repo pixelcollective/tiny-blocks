@@ -2,17 +2,17 @@
 
 namespace TinyBlocks;
 
-use TinyBlocks\Base\AssetsManager as BaseAssetsManager;
+use TinyBlocks\Base\Assets as BaseAssets;
 
 /**
- * Assets Manager
+ * Assets
  *
  * @since   0.0.1
  * @version 0.3.0
  * @license MIT
  * @author  Kelly Mears <developers@tinypixel.dev>
  */
-class AssetsManager extends BaseAssetsManager
+class Assets extends BaseAssets
 {
     // --
 }

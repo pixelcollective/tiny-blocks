@@ -7,12 +7,12 @@ use Psr\Container\ContainerInterface as Container;
 use TinyBlocks\Contracts\BlockInterface as Block;
 
 /**
- * AssetsManage Interface
+ * Assets Interface
  *
  * @package TinyBlocks
  * @subpackage Contracts
  */
-interface AssetsManagerInterface
+interface AssetsInterface
 {
     // --
 }

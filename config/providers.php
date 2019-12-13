@@ -1,12 +1,11 @@
 <?php
 
 use function DI\factory;
-
+use Psr\Container\ContainerInterface as Container;
 use TinyBlocks\Block;
 use TinyBlocks\View;
-use TinyBlocks\AssetsManager;
+use TinyBlocks\Assets;
 use TinyBlocks\Registrar;
-use Psr\Container\ContainerInterface;
 
 return [
     /*
@@ -21,18 +20,18 @@ return [
     |
     */
     /** @see TinyBlocks\Contracts\ViewInterface */
-    'view' => function (ContainerInterface $app) {
+    'view' => function (Container $app) {
         return new View($app);
     },
 
     /** @see TinyBlocks\Contracts\BlockInterface */
-    'block' => function (ContainerInterface $app) {
+    'block' => function (Container $app) {
         return new Block($app);
     },
 
-    /** @see TinyBlocks\Contracts\AssetsManagerInterface */
-    'assets' => function (ContainerInterface $app) {
-        return new AssetsManager($app);
+    /** @see TinyBlocks\Contracts\AssetsInterface */
+    'assets' => function (Container $app) {
+        return new Assets($app);
     },
 
     /** @see TinyBlocks\Contracts\RegistrarInterface */

@@ -42,9 +42,9 @@ class View extends BaseView
      */
     public function register(Container $app) : void
     {
-        $this->blade = new Blade(
-            ...$this->config()
-        );
+        /* $this->blade = new Blade(
+            ...$this->getConfig()
+        ); */
     }
 
     /**
@@ -82,7 +82,7 @@ class View extends BaseView
      */
     public function getBaseDir() : string
     {
-        return $this->baseDir;
+        return $this->baseDir ?: '';
     }
 
     /**
@@ -92,7 +92,7 @@ class View extends BaseView
      */
     public function getCacheDir() : string
     {
-        return $this->cacheDir;
+        return $this->cacheDir ?: '';
     }
 
     /**
@@ -102,6 +102,6 @@ class View extends BaseView
      */
     public function getDebug() : int
     {
-        return $this->debug;
+        return $this->debug ?: 0;
     }
 }

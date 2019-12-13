@@ -2,6 +2,8 @@
 
 namespace TinyBlocks;
 
+use TinyBlocks\Base\Registrar as BaseRegistrar;
+
 /**
  * Block registrar
  *

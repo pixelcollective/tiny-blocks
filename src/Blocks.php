@@ -86,6 +86,8 @@ class Blocks implements Application
         $this->makeProviders();
 
         $this->registerHooks();
+
+        $this->view()->register($this->container());
     }
 
     /**
@@ -145,7 +147,7 @@ class Blocks implements Application
     public function makeProviders() : void
     {
         $this->makeRegistrar();
-        $this->makeAssetsManager();
+        $this->makeAssets();
         $this->makeView();
     }
 
@@ -198,7 +200,9 @@ class Blocks implements Application
      */
     public function makeView()
     {
-        $this->view = $this->container('view');
+        $this->view = $this->container()->make('view', [
+            'container' => $this->container(),
+        ]);
     }
 
     /**
@@ -218,7 +222,9 @@ class Blocks implements Application
      */
     public function makeRegistrar()
     {
-        $this->registrar = $this->container('registrar');
+        $this->registrar = $this->container()->make('registrar', [
+            'container' => $this->container(),
+        ]);
     }
 
     /**
@@ -236,19 +242,21 @@ class Blocks implements Application
      *
      * @return void
      */
-    public function makeAssetsManager()
+    public function makeAssets()
     {
-        $this->assetsManager = $this->container('assets');
+        $this->assets = $this->container()->make('assets', [
+            'container' => $this->container(),
+        ]);
     }
 
     /**
      * Get assets manager
      *
-     * @return \TinyBlocks\Contracts\AssetsManagerInterface;
+     * @return \TinyBlocks\Contracts\AssetsInterface;
      */
-    public function assetsManager()
+    public function assets()
     {
-        return $this->assetsManager;
+        return $this->assets;
     }
 
     /**
@@ -280,7 +288,7 @@ class Blocks implements Application
     public function enqueueEditorAssets()
     {
         if ($this->blocks->isNotEmpty())
-            $this->assetsManager()->enqueueEditor($this->blocks);
+            $this->Assets()->enqueueEditor($this->blocks);
     }
 
     /**
@@ -291,7 +299,7 @@ class Blocks implements Application
     public function enqueuePublicAssets()
     {
         if ($this->blocks->isNotEmpty())
-            $this->assetsManager()->enqueuePublic($this->blocks);
+            $this->Assets()->enqueuePublic($this->blocks);
     }
 
     /**
