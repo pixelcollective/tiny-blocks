@@ -12,5 +12,7 @@ use TinyBlocks\Contracts\BlockInterface;
  */
 interface ViewInterface
 {
+    public function boot();
+
     public function render(BlockInterface $block) : void;
 }

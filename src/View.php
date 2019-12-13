@@ -13,12 +13,32 @@ use TinyBlocks\Contracts\BlockInterface;
  */
 class View implements ViewInterface
 {
+    /** @var eftec\bladeone\BladeOne */
+    protected $blade;
+
+    /** @var string */
+    protected $baseDir;
+
+    /** @var string */
+    protected $cacheDir;
+
+    /** @var int */
+    protected $debug;
+
+    /**
+     * Class constructor.
+     */
     public function __construct()
     {
         // --
     }
 
-    public function boot()
+    /**
+     * Boot view implementation
+     *
+     * @return void
+     */
+    public function boot() : void
     {
         $this->blade = new Blade(...$this->config());
     }
