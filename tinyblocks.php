@@ -22,8 +22,8 @@ use TinyBlocks\Application;
      * @param  string default base directory (WP_PLUGINS)
      * @return void
      */
-    public function __invoke(string $baseDir) : void
+    public function __invoke() : void
     {
-        Application::getInstance(__DIR__ . '/config/application.php');
+        Application::getInstance();
     }
-})(WP_PLUGIN_DIR);
+})();
