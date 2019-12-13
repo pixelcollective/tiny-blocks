@@ -1,17 +1,18 @@
 <?php
 
-namespace TinyBlocks\Provider;
+namespace TinyBlocks;
 
 use eftec\bladeone\BladeOne as Blade;
-use TinyBlocks\Contracts\ViewInterface;
-use TinyBlocks\Contracts\BlockInterface;
+use Psr\Container\ContainerInterface as Container;
+use TinyBlocks\Contracts\BlockInterface as Block;
+use TinyBlocks\Base\View as BaseView;
 
 /**
  * View
  *
  * @package TinyBlocks
  */
-class View implements ViewInterface
+class View extends BaseView
 {
     /** @var eftec\bladeone\BladeOne */
     protected $blade;
@@ -36,11 +37,28 @@ class View implements ViewInterface
     /**
      * Boot view implementation
      *
+     * @param  Psr\Container\ContainerInterface container instance
      * @return void
      */
-    public function boot() : void
+    public function register(Container $app) : void
     {
-        $this->blade = new Blade(...$this->config());
+        $this->blade = new Blade(
+            ...$this->config()
+        );
+    }
+
+    /**
+     * Render a view
+     *
+     * @param  \TinyBlocks\Contracts\BlockInterface block instance
+     * @return string rendered view
+     */
+    public function render(Block $block) : string
+    {
+        return $this->blade->run(
+            $block->getView(),
+            $block->getData()
+        );
     }
 
     /**
@@ -50,7 +68,11 @@ class View implements ViewInterface
      */
     public function getConfig() : array
     {
-        return [$this->baseDir, $this->cacheDir, $this->debug];
+        return [
+            $this->getBaseDir(),
+            $this->getCacheDir(),
+            $this->getDebug()
+        ];
     }
 
     /**
@@ -81,15 +103,5 @@ class View implements ViewInterface
     public function getDebug() : int
     {
         return $this->debug;
-    }
-
-    /**
-     * Render a view
-     *
-     * @return string rendered view
-     */
-    public function render(BlockInterface $block) : string
-    {
-        return $this->blade->run($block->getView(), $block->getData());
     }
 }

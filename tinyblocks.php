@@ -12,18 +12,19 @@ namespace TinyBlocks;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use \WP_Error;
-use TinyBlocks\Application;
+use TinyBlocks\Blocks;
 
+/**
+ * Tinyblocks runtime
+ */
 (new class {
     /**
      * Class invocation.
-     *
-     * @param  string default base directory (WP_PLUGINS)
-     * @return void
      */
     public function __invoke() : void
     {
-        Application::getInstance();
+        $tinyblocks = Blocks::getInstance();
+
+        $tinyblocks->initialize();
     }
 })();

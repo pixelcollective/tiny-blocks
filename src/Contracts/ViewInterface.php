@@ -2,8 +2,9 @@
 
 namespace TinyBlocks\Contracts;
 
-use Illuminate\Support\Collection;
-use TinyBlocks\Contracts\BlockInterface;
+use \Illuminate\Support\Collection;
+use \Psr\Container\ContainerInterface as Container;
+use \TinyBlocks\Contracts\BlockInterface as Block;
 
 /**
  * View interface
@@ -12,7 +13,7 @@ use TinyBlocks\Contracts\BlockInterface;
  */
 interface ViewInterface
 {
-    public function boot();
+    public function register(Container $app);
 
-    public function render(BlockInterface $block) : void;
+    public function render(Block $block) : string;
 }
