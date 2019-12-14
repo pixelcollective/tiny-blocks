@@ -106,15 +106,18 @@ class Blocks implements Application
     public function registerHooks()
     {
         add_action('init', function () {
-            $this->registerBlocks();
+            if ($this->blocks->isNotEmpty())
+                $this->registrar()->register($this->blocks);
         });
 
         add_action('enqueue_block_editor_assets', function () {
-            $this->enqueueEditorAssets();
+            if ($this->blocks->isNotEmpty())
+                $this->assets()->enqueueEditorAssets($this->blocks);
         });
 
         add_action('wp_enqueue_scripts', function () {
-            $this->enqueuePublicAssets();
+            if ($this->blocks->isNotEmpty())
+                $this->assets()->enqueuePublicAssets($this->blocks);
         });
     }
 
@@ -267,39 +270,6 @@ class Blocks implements Application
     public function bootViewProvider()
     {
         $this->view->boot();
-    }
-
-    /**
-     * Register blocks
-     *
-     * @return void
-     */
-    public function registerBlocks() : void
-    {
-        if ($this->blocks->isNotEmpty())
-            $this->registrar()->register($this->blocks);
-    }
-
-    /**
-     * Enqueue editor assets
-     *
-     * @return void
-     */
-    public function enqueueEditorAssets()
-    {
-        if ($this->blocks->isNotEmpty())
-            $this->Assets()->enqueueEditor($this->blocks);
-    }
-
-    /**
-     * Enqueue public assets
-     *
-     * @return void
-     */
-    public function enqueuePublicAssets()
-    {
-        if ($this->blocks->isNotEmpty())
-            $this->Assets()->enqueuePublic($this->blocks);
     }
 
     /**

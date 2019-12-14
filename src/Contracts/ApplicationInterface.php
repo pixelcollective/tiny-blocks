@@ -27,12 +27,6 @@ interface ApplicationInterface
 
     public function bootViewProvider();
 
-    public function registerBlocks();
-
-    public function enqueueEditorAssets();
-
-    public function enqueuePublicAssets();
-
     public function config($configOverride = null) : array;
 
     public function requireCoreConfigFile(string $file) : array;

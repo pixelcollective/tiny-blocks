@@ -14,6 +14,18 @@ use TinyBlocks\Contracts\ViewInterface;
  */
 abstract class View implements ViewInterface
 {
+    /** @var eftec\bladeone\BladeOne */
+    protected $blade;
+
+    /** @var string */
+    protected $baseDir;
+
+    /** @var string */
+    protected $cacheDir;
+
+    /** @var int */
+    protected $debug;
+
     /**
      * Class constructor.
      */
@@ -30,9 +42,9 @@ abstract class View implements ViewInterface
      */
     public function register(Container $app) : void
     {
-        $this->blade = new Blade(
-            ...$this->config()
-        );
+        /* $this->blade = new Blade(
+            ...$this->getConfig()
+        ); */
     }
 
     /**
@@ -47,5 +59,49 @@ abstract class View implements ViewInterface
             $block->getView(),
             $block->getData()
         );
+    }
+
+    /**
+     * Return BladeOne configuration as an array
+     *
+     * @return array bladeone configuration
+     */
+    public function getConfig() : array
+    {
+        return [
+            $this->getBaseDir(),
+            $this->getCacheDir(),
+            $this->getDebug()
+        ];
+    }
+
+    /**
+     * Return BladeOne base directory
+     *
+     * @return string
+     */
+    public function getBaseDir() : string
+    {
+        return $this->baseDir ?: '';
+    }
+
+    /**
+     * Return BladeOne cache directory
+     *
+     * @return string
+     */
+    public function getCacheDir() : string
+    {
+        return $this->cacheDir ?: '';
+    }
+
+    /**
+     * Return BladeOne debug mode
+     *
+     * @return int debug constant
+     */
+    public function getDebug() : int
+    {
+        return $this->debug ?: 0;
     }
 }

@@ -15,7 +15,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use TinyBlocks\Blocks;
 
 /**
- * Tinyblocks runtime
+ * Block time.
  */
 (new class {
     /**
@@ -23,8 +23,13 @@ use TinyBlocks\Blocks;
      */
     public function __invoke() : void
     {
+        /** initialize */
         $tinyblocks = Blocks::getInstance();
-
         $tinyblocks->initialize();
+
+        /** create a new block and define it functionally */
+        $myBlock = $tinyblocks->make();
+        $myBlock->name = 'tinyblock/example';
+        $tinyblocks->register($myBlock);
     }
 })();

@@ -13,8 +13,23 @@ use TinyBlocks\Contracts\BlockInterface;
  */
 abstract class Block implements BlockInterface
 {
-    /** @var string */
+    /**
+     * Name
+     * @var string
+     */
     public $name;
+
+    /**
+     * View path
+     * @var string
+     */
+    public $view;
+
+    /**
+     * Data
+     * @var \Illuminate\Support\Collection
+     */
+    public $data;
 
     /**
      * Get block name
