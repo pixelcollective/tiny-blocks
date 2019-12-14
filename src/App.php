@@ -6,23 +6,36 @@ use Illuminate\Support\Collection;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface as Container;
 use TinyBlocks\Contracts\ApplicationInterface as Application;
+use TinyBlocks\Contracts\AssetsInterface as Assets;
 use TinyBlocks\Contracts\BlockInterface as Block;
+use TinyBlocks\Contracts\RegistrarInterface as Registrar;
+use TinyBlocks\Contracts\ViewInterface as View;
 
 /**
- * Blocks Application
+ * Application
  *
  * @package TinyBlocks
  */
-class Blocks implements Application
+class App implements Application
 {
     /**
      * Core configuration files
+     *
      * @var array
      */
     public static $configFiles = [
         'filesystem',
         'providers',
+        'views',
     ];
+
+    /**
+     * The application instance.
+     *
+     * @var static \TinyBlocks\App
+     */
+    public static $instance;
+
 
     /**
      * The dependency injection container.
@@ -39,11 +52,32 @@ class Blocks implements Application
     public $blocks;
 
     /**
-     * The application instance.
+     * View instances
      *
-     * @static \TinyBlocks\Application
+     * @var \Illumiante\Support\Collection
      */
-    public static $instance;
+    public $viewInstances;
+
+    /**
+     * Registrar
+     *
+     * @var \TinyBlocks\Contracts\RegistrarInterface
+     */
+    public $registrar;
+
+    /**
+     * Assets
+     *
+     * @var \TinyBlocks\Contracts\AssetsInterface
+     */
+    public $assets;
+
+    /**
+     * Assets
+     *
+     * @var \TinyBlocks\Contracts\ViewInterface
+     */
+    public $view;
 
     /**
      * Class constructor.
@@ -63,12 +97,12 @@ class Blocks implements Application
      * Get singleton instance
      *
      * @param  string filepath of override configs
-     * @return \TinyBlocks\Application
+     * @return \TinyBlocks\App
      */
-    public static function getInstance(string $config = null) : Application
+    public static function getInstance(string $config = null) : App
     {
         if (! self::$instance) {
-            self::$instance = new Blocks($config);
+            self::$instance = new App($config);
         }
 
         return self::$instance;
@@ -86,8 +120,6 @@ class Blocks implements Application
         $this->makeProviders();
 
         $this->registerHooks();
-
-        $this->view()->register($this->container());
     }
 
     /**
@@ -98,27 +130,6 @@ class Blocks implements Application
     public function initializeBlocks() : void
     {
         $this->blocks = Collection::make();
-    }
-
-    /**
-     * Register hooks
-     */
-    public function registerHooks()
-    {
-        add_action('init', function () {
-            if ($this->blocks->isNotEmpty())
-                $this->registrar()->register($this->blocks);
-        });
-
-        add_action('enqueue_block_editor_assets', function () {
-            if ($this->blocks->isNotEmpty())
-                $this->assets()->enqueueEditorAssets($this->blocks);
-        });
-
-        add_action('wp_enqueue_scripts', function () {
-            if ($this->blocks->isNotEmpty())
-                $this->assets()->enqueuePublicAssets($this->blocks);
-        });
     }
 
     /**
@@ -150,8 +161,36 @@ class Blocks implements Application
     public function makeProviders() : void
     {
         $this->makeRegistrar();
+
         $this->makeAssets();
-        $this->makeView();
+
+        $this->makeViews();
+    }
+
+    /**
+     * Register hooks
+     *
+     * @return void
+     */
+    public function registerHooks() : void
+    {
+        add_action('init', function () {
+            if ($this->blocks->isNotEmpty()) {
+                $this->registrar()->register($this->blocks);
+            }
+        });
+
+        add_action('enqueue_block_editor_assets', function () {
+            if ($this->blocks->isNotEmpty()) {
+                $this->assets()->enqueueEditorAssets($this->blocks);
+            }
+        });
+
+        add_action('wp_enqueue_scripts', function () {
+            if ($this->blocks->isNotEmpty()) {
+                $this->assets()->enqueuePublicAssets($this->blocks);
+            }
+        });
     }
 
     /**
@@ -165,14 +204,53 @@ class Blocks implements Application
     }
 
     /**
+     * Instantiate registrar
+     *
+     * @return \TinyBlocks\Contracts\RegistrarInterface
+     */
+    public function makeRegistrar() : Registrar
+    {
+        return $this->registrar = $this->container()->make('registrar');
+    }
+
+    /**
+     * Instantiate assets manager
+     *
+     * @return \TinyBlocks\Contracts\AssetsInterface
+     */
+    public function makeAssets() : Assets
+    {
+        return $this->assets = $this->container()->make('assets');
+    }
+
+    /**
+     * Instantiate view provider
+     *
+     * @return \Illuminate\Support\Collection
+     */
+    public function makeViews() : Collection
+    {
+        $viewInstances = Collection::make();
+
+        Collection::make($this->container->get('views'))
+            ->each(function ($viewConfig, $view) use ($viewInstances) {
+                $view = $this->container()->make('view');
+
+                $viewInstances->push($view, $view->config($viewConfig));
+            });
+
+        return $this->viewInstances = $viewInstances;
+    }
+
+    /**
      * Register a block instance
      *
      * @param  \TinyBlocks\Contracts\BlockInterface
-     * @return void
+     * @return \Illuminate\Support\Collection
      */
-    public function register(Block $block) : void
+    public function register(Block $block) : Collection
     {
-        $this->blocks()->put($block->name, $block);
+        return $this->blocks()->put($block->name, $block);
     }
 
     /**
@@ -197,37 +275,13 @@ class Blocks implements Application
     }
 
     /**
-     * Instantiate view provider
-     *
-     * @return void
-     */
-    public function makeView()
-    {
-        $this->view = $this->container()->make('view', [
-            'container' => $this->container(),
-        ]);
-    }
-
-    /**
      * Get view provider
      *
      * @return \TinyBlocks\Contracts\View;
      */
-    public function view()
+    public function view(string $viewKey) : View
     {
-        return $this->view;
-    }
-
-    /**
-     * Instantiate registrar
-     *
-     * @return void
-     */
-    public function makeRegistrar()
-    {
-        $this->registrar = $this->container()->make('registrar', [
-            'container' => $this->container(),
-        ]);
+        return $this->viewInstances->get($viewKey);
     }
 
     /**
@@ -235,21 +289,9 @@ class Blocks implements Application
      *
      * @return \TinyBlocks\Contracts\RegistrarInterface;
      */
-    public function registrar()
+    public function registrar() : Registrar
     {
         return $this->registrar;
-    }
-
-    /**
-     * Instantiate assets manager
-     *
-     * @return void
-     */
-    public function makeAssets()
-    {
-        $this->assets = $this->container()->make('assets', [
-            'container' => $this->container(),
-        ]);
     }
 
     /**
@@ -257,7 +299,7 @@ class Blocks implements Application
      *
      * @return \TinyBlocks\Contracts\AssetsInterface;
      */
-    public function assets()
+    public function assets() : Assets
     {
         return $this->assets;
     }

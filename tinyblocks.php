@@ -8,28 +8,20 @@
  * License:         MIT
  * Text Domain:     block-modules
  */
-namespace TinyBlocks;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-use TinyBlocks\Blocks;
-
-/**
- * Block time.
- */
 (new class {
-    /**
-     * Class invocation.
-     */
-    public function __invoke() : void
-    {
+    public function __invoke() {
         /** initialize */
-        $tinyblocks = Blocks::getInstance();
+        $tinyblocks = \TinyBlocks\App::getInstance();
         $tinyblocks->initialize();
 
         /** create a new block and define it functionally */
         $myBlock = $tinyblocks->make();
         $myBlock->name = 'tinyblock/example';
         $tinyblocks->register($myBlock);
+
+        dd($tinyblocks);
     }
 })();

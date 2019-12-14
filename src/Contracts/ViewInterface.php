@@ -13,7 +13,7 @@ use \TinyBlocks\Contracts\BlockInterface as Block;
  */
 interface ViewInterface
 {
-    public function register(Container $app);
+    public function register() : void;
 
     public function render(Block $block) : string;
 }

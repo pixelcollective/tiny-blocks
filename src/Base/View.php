@@ -27,11 +27,26 @@ abstract class View implements ViewInterface
     protected $debug;
 
     /**
-     * Class constructor.
+     * Class constructor
+     *
+     * @param \Psr\Container\ContainerInterface
      */
-    public function __construct()
+    public function __construct(Container $app)
     {
-        // --
+        $this->app = $app;
+
+        return $this;
+    }
+
+    /**
+     * Configure view instance
+     *
+     * @param  array $config
+     * @return void
+     */
+    public function config(array $config) : void
+    {
+        $this->config = $config;
     }
 
     /**
@@ -40,7 +55,7 @@ abstract class View implements ViewInterface
      * @param  Psr\Container\ContainerInterface container instance
      * @return void
      */
-    public function register(Container $app) : void
+    public function register() : void
     {
         /* $this->blade = new Blade(
             ...$this->getConfig()

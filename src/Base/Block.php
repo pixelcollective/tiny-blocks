@@ -3,6 +3,7 @@
 namespace TinyBlocks\Base;
 
 use Illuminate\Support\Collection;
+use Psr\Container\ContainerInterface as Container;
 use TinyBlocks\Contracts\ViewInterface;
 use TinyBlocks\Contracts\BlockInterface;
 
@@ -30,6 +31,16 @@ abstract class Block implements BlockInterface
      * @var \Illuminate\Support\Collection
      */
     public $data;
+
+    /**
+     * Class constructor
+     *
+     * @param \Psr\Container\ContainerInterface
+     */
+    public function __construct(Container $app)
+    {
+        $this->app = $app;
+    }
 
     /**
      * Get block name

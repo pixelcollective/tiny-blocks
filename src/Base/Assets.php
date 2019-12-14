@@ -30,9 +30,9 @@ abstract class Assets implements AssetsInterface
      *
      * @param \Psr\Container\ContainerInterface
      */
-    public function __construct(Container $app)
+    public function __construct(Container $container)
     {
-        $this->app = $app;
+        $this->container = $container;
 
         $this->blocks = Collection::make();
     }

@@ -2,6 +2,7 @@
 
 use function DI\factory;
 use Psr\Container\ContainerInterface as Container;
+use TinyBlocks\App;
 use TinyBlocks\Block;
 use TinyBlocks\View;
 use TinyBlocks\Assets;
@@ -19,6 +20,11 @@ return [
     | core services (for example: using Illuminate\View instead of eftect\BladeOne)
     |
     */
+    /** @see TinyBlocks\Contracts\ApplicationInterface */
+    'application' => function () {
+        return App::getInstance();
+    },
+
     /** @see TinyBlocks\Contracts\ViewInterface */
     'view' => function (Container $app) {
         return new View($app);
