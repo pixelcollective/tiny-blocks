@@ -26,7 +26,7 @@ interface AssetInterface
 
     public function setVersion(string $version): AssetInterface;
 
-    public function getManifest(): object;
+    public function getManifest();
 
     public function setManifest(string $manifest): AssetInterface;
 }

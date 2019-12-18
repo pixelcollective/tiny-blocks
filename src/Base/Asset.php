@@ -150,10 +150,9 @@ abstract class Asset implements AssetInterface
     /**
      * Get manifest.
      *
-     * @param  object
-     * @return void
+     * @return object; null if none
      */
-    public function getManifest(): object
+    public function getManifest()
     {
         return $this->manifest;
     }

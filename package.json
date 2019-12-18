@@ -1,0 +1,11 @@
+{
+  "name": "tinyblocks",
+  "version": "0.0.9",
+  "main": "index.js",
+  "repository": "git@github.com:pixelcollective/block-modules",
+  "author": "kellymears <developers@tinypixel.dev>",
+  "license": "MIT",
+  "devDependencies": {
+    "gitmoji-cli": "^3.0.0"
+  }
+}
