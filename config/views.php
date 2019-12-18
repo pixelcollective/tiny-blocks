@@ -1,5 +1,7 @@
 <?php
 
+$cachePath = wp_upload_dir()['basedir'] . '/blocks';
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -12,10 +14,27 @@ return [
     | specified. Other view implementations may work differently.
     |
     */
+
     'views' => [
-        'plugin' => [
-            'dir'   => WP_PLUGIN_DIR,
-            'url'   => plugins_url(),
+        'wordpress' => [
+            'dir'   => WP_CONTENT_DIR,
+            'url'   => \content_url(),
+            'cache' => $cachePath,
+            'debug' => 0,
         ],
+
+        'plugins' => [
+            'dir' => WP_PLUGIN_DIR,
+            'url' => \plugins_url(),
+            'cache' => $cachePath,
+            'debug' => 0,
+        ],
+
+        'tinyblocks' => [
+            'dir'   => WP_CONTENT_DIR . '/plugins/tinyblocks/resources/views',
+            'url'   => \content_url() . '/plugins/tinyblocks/dist',
+            'cache' => $cachePath,
+            'debug' => 0,    
+        ]
     ],
 ];

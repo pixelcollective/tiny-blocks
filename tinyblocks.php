@@ -13,15 +13,27 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 (new class {
     public function __invoke() {
-        /** initialize */
         $tinyblocks = \TinyBlocks\App::getInstance();
         $tinyblocks->initialize();
 
-        /** create a new block and define it functionally */
+        /** functionally create and define a new block */
         $myBlock = $tinyblocks->make();
-        $myBlock->name = 'tinyblock/example';
-        $tinyblocks->register($myBlock);
+        $myBlock->setName('tinyblock/example');
+        $myBlock->setView('plugins');
+        $myBlock->setTemplate('tinyblocks/resources/views/block.blade.php');
+        
+        /** functionally define a script */
+        $script = $myBlock->makeAsset()
+            ->setName('tinyblocks/example/js')
+            ->setUrl(WP_PLUGIN_DIR . '/tinyblocks/dist/editor.js')
+            ->setManifest(plugins_url() . '/tinyblocks/dist/editor.manifest.php');
+        
+        $myBlock->addEditorScript($script);
 
-        dd($tinyblocks);
+        /** finalize */
+        $tinyblocks->addBlock($myBlock);
+
+        /** pre-define a block */
+        $tinyblocks->addBlock(\TinyBlocks\Demo\DemoBlock::class);
     }
 })();

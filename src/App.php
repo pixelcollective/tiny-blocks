@@ -24,7 +24,6 @@ class App implements Application
      * @var array
      */
     public static $configFiles = [
-        'filesystem',
         'providers',
         'views',
     ];
@@ -52,13 +51,6 @@ class App implements Application
     public $blocks;
 
     /**
-     * View instances
-     *
-     * @var \Illumiante\Support\Collection
-     */
-    public $viewInstances;
-
-    /**
      * Registrar
      *
      * @var \TinyBlocks\Contracts\RegistrarInterface
@@ -73,7 +65,7 @@ class App implements Application
     public $assets;
 
     /**
-     * Assets
+     * View
      *
      * @var \TinyBlocks\Contracts\ViewInterface
      */
@@ -86,15 +78,20 @@ class App implements Application
      */
     public function __construct(string $config = null)
     {
-        $container = (new ContainerBuilder)
-                ->addDefinitions($this->config($config))
-                ->build();
+        /** Configure and build the container. */
+        $this->container = (new ContainerBuilder)
+            ->addDefinitions($this->config($config))
+            ->build();
 
-        $this->setContainer($container);
+        /** Set config in container instance */
+        $this->container->set('config', $this->config);
+
+        /** Register WordPress hooks. */
+        $this->registerHooks();
     }
 
     /**
-     * Get singleton instance
+     * Singleton constructor.
      *
      * @param  string filepath of override configs
      * @return \TinyBlocks\App
@@ -109,17 +106,13 @@ class App implements Application
     }
 
     /**
-     * Initialize
+     * Initialize instance.
      *
      * @return void
      */
     public function initialize() : void
     {
         $this->initializeBlocks();
-
-        $this->makeProviders();
-
-        $this->registerHooks();
     }
 
     /**
@@ -133,38 +126,13 @@ class App implements Application
     }
 
     /**
-     * Get container
+     * Get container.
      *
      * @return \Psr\Container\ContainerInterface
      */
     public function container() : Container
-    {
+    {        
         return $this->container;
-    }
-
-    /**
-     * Set container
-     *
-     * @param  \Psr\Container\ContainerInterface
-     * @return void
-     */
-    public function setContainer(Container $container) : void
-    {
-        $this->container = $container;
-    }
-
-    /**
-     * Make providers
-     *
-     * @return void
-     */
-    public function makeProviders() : void
-    {
-        $this->makeRegistrar();
-
-        $this->makeAssets();
-
-        $this->makeViews();
     }
 
     /**
@@ -176,18 +144,26 @@ class App implements Application
     {
         add_action('init', function () {
             if ($this->blocks->isNotEmpty()) {
+                $this->makeRegistrar();
+
+                $this->container->set('blocks', $this->blocks);
+
                 $this->registrar()->register($this->blocks);
             }
         });
 
         add_action('enqueue_block_editor_assets', function () {
             if ($this->blocks->isNotEmpty()) {
+                $this->makeAssets();
+
                 $this->assets()->enqueueEditorAssets($this->blocks);
             }
         });
 
         add_action('wp_enqueue_scripts', function () {
             if ($this->blocks->isNotEmpty()) {
+                $this->makeViews();
+
                 $this->assets()->enqueuePublicAssets($this->blocks);
             }
         });
@@ -210,7 +186,9 @@ class App implements Application
      */
     public function makeRegistrar() : Registrar
     {
-        return $this->registrar = $this->container()->make('registrar');
+        $this->registrar = $this->container()->make('registrar');
+
+        return $this->registrar;
     }
 
     /**
@@ -243,13 +221,17 @@ class App implements Application
     }
 
     /**
-     * Register a block instance
+     * Add a block instance
      *
      * @param  \TinyBlocks\Contracts\BlockInterface
      * @return \Illuminate\Support\Collection
      */
-    public function register(Block $block) : Collection
+    public function addBlock($block) : Collection
     {
+        $block = is_string($block)
+            ? new $block($this->container())
+            : $block;
+
         return $this->blocks()->put($block->name, $block);
     }
 
@@ -305,24 +287,29 @@ class App implements Application
     }
 
     /**
-     * Boot view provider
-     *
-     * @return void
+     * Get config
+     * 
+     * @return \Illuminate\Support\Collection
      */
-    public function bootViewProvider()
+    public function getConfig()
     {
-        $this->view->boot();
+        return $this->config;
     }
 
     /**
-     * Get configuration
+     * Writes configuration to container.
      *
      * @param  array filepath of override configs
      * @return array
      */
     public function config($configOverride = null) : array
     {
-        $config = ! $configOverride
+        /** 
+         * Create configuration from defaults, user
+         * supplied values, or a mixture of the two 
+         * (should the user not supply all requried configs)
+         */
+        $this->config = ! $configOverride
             ? Collection::make(self::$configFiles)
                 ->mapWithKeys(function ($file) {
                     return $this->requireCoreConfigFile($file);
@@ -335,14 +322,15 @@ class App implements Application
                     });
 
                 Collection::make(self::$configFiles)
-                    ->each(function ($file) use ($config) {
+                    ->each(function ($file) {
                         if (! $config->get($file)) {
                             $config->put($file, $this->requireCoreConfigFile($file));
                         }
                     });
             })();
 
-        return $config->toArray();
+        /** Return config as array */
+        return $this->config->toArray();
     }
 
     /**

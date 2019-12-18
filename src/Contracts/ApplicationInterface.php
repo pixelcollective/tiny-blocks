@@ -38,9 +38,7 @@ interface ApplicationInterface
 
     public function view(string $viewKey) : View;
 
-    public function register(Block $block) : Collection;
-
-    public function bootViewProvider();
+    public function addBlock($block) : Collection;
 
     public function config($configOverride = null) : array;
 

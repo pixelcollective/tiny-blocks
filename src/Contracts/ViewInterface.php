@@ -13,7 +13,9 @@ use \TinyBlocks\Contracts\BlockInterface as Block;
  */
 interface ViewInterface
 {
-    public function register() : void;
+    public function register(object $config) : void;
+
+    public function boot();
 
     public function render(Block $block) : string;
 }

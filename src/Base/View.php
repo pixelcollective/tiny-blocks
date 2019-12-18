@@ -31,22 +31,23 @@ abstract class View implements ViewInterface
      *
      * @param \Psr\Container\ContainerInterface
      */
-    public function __construct(Container $app)
+    public function __construct(Container $container)
     {
-        $this->app = $app;
+        $this->container = $container;
 
         return $this;
     }
 
     /**
-     * Configure view instance
-     *
-     * @param  array $config
-     * @return void
+     * Register view implementation
      */
-    public function config(array $config) : void
-    {
-        $this->config = $config;
+    public function register(object $config) : void
+    {           
+        $this->setBaseDir($config->dir);
+
+        $this->setCacheDir($config->cache);
+
+        $this->setDebug($config->debug);
     }
 
     /**
@@ -55,15 +56,15 @@ abstract class View implements ViewInterface
      * @param  Psr\Container\ContainerInterface container instance
      * @return void
      */
-    public function register() : void
+    public function boot() : void
     {
-        /* $this->blade = new Blade(
+        $this->blade = new Blade(
             ...$this->getConfig()
-        ); */
+        );
     }
 
     /**
-     * Render a view
+     * Render a view.
      *
      * @param  \TinyBlocks\Contracts\BlockInterface block instance
      * @return string rendered view
@@ -77,7 +78,7 @@ abstract class View implements ViewInterface
     }
 
     /**
-     * Return BladeOne configuration as an array
+     * Get view configuration as a spreadable array.
      *
      * @return array bladeone configuration
      */
@@ -91,32 +92,65 @@ abstract class View implements ViewInterface
     }
 
     /**
-     * Return BladeOne base directory
+     * Get view base directory.
      *
      * @return string
      */
     public function getBaseDir() : string
     {
-        return $this->baseDir ?: '';
+        return $this->baseDir;
     }
 
     /**
-     * Return BladeOne cache directory
+     * Set view base directory.
+     * 
+     * @param  string
+     * @return void
+     */
+    public function setBaseDir(string $baseDir) : void
+    {
+        $this->baseDir = $baseDir;
+    }
+
+    /**
+     * Get view cache directory.
      *
      * @return string
      */
     public function getCacheDir() : string
     {
-        return $this->cacheDir ?: '';
+        return $this->cacheDir;
     }
 
     /**
-     * Return BladeOne debug mode
+     * Set view cache directory.
+     * 
+     * @param  string
+     * @return void
+     */
+    public function setCacheDir(string $cacheDir) : void
+    {
+        $this->cacheDir = $cacheDir;
+    }
+
+    /**
+     * Get view debug mode.
      *
      * @return int debug constant
      */
     public function getDebug() : int
     {
-        return $this->debug ?: 0;
+        return $this->debug;
+    }
+
+    /**
+     * Set view debug mode.
+     * 
+     * @param  int debug constant
+     * @return void
+     */
+    public function setDebug(int $debug) : void
+    {
+        $this->debug = $debug;
     }
 }

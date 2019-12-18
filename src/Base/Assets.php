@@ -26,7 +26,7 @@ abstract class Assets implements AssetsInterface
     public $blocks;
 
     /**
-     * Class constructor
+     * Class constructor.
      *
      * @param \Psr\Container\ContainerInterface
      */
@@ -38,7 +38,7 @@ abstract class Assets implements AssetsInterface
     }
 
     /**
-     * Enqueue editor assets
+     * Enqueue editor assets.
      *
      * @param  \Illuminate\Support\Collection
      * @return void
@@ -50,7 +50,7 @@ abstract class Assets implements AssetsInterface
     }
 
     /**
-     * Enqueue public assets
+     * Enqueue public assets.
      *
      * @param  \Illuminate\Support\Collection
      * @return void
@@ -62,7 +62,7 @@ abstract class Assets implements AssetsInterface
     }
 
     /**
-     * Enqueue block editor scripts
+     * Enqueue block editor scripts.
      *
      * @param  \Illuminate\Support\Collection
      * @param  string where to enqueue
@@ -85,7 +85,7 @@ abstract class Assets implements AssetsInterface
     }
 
     /**
-     * Enqueue block styles
+     * Enqueue block styles.
      *
      * @param  \Illuminate\Support\Collection
      * @param  string where to enqueue

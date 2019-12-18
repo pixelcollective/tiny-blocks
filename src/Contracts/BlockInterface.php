@@ -16,7 +16,7 @@ interface BlockInterface
 
     public function setName(string $blockname) : void;
 
-    public function getData() : Collection;
+    public function getData() : array;
 
-    public function setData(Collection $data) : void;
+    public function setData(array $data) : void;
 }

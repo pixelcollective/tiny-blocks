@@ -1,12 +1,14 @@
 <?php
 
 use function DI\factory;
-use Psr\Container\ContainerInterface as Container;
+
 use TinyBlocks\App;
 use TinyBlocks\Block;
 use TinyBlocks\View;
+use TinyBlocks\Asset;
 use TinyBlocks\Assets;
 use TinyBlocks\Registrar;
+use Psr\Container\ContainerInterface as Container;
 
 return [
     /*
@@ -20,6 +22,7 @@ return [
     | core services (for example: using Illuminate\View instead of eftect\BladeOne)
     |
     */
+    
     /** @see TinyBlocks\Contracts\ApplicationInterface */
     'application' => function () {
         return App::getInstance();
@@ -38,6 +41,11 @@ return [
     /** @see TinyBlocks\Contracts\AssetsInterface */
     'assets' => function (Container $app) {
         return new Assets($app);
+    },
+
+    /** @see TinyBlocks\Contracts\AssetInterface */
+    'asset' => function (Container $app) {
+        return new Asset($app);
     },
 
     /** @see TinyBlocks\Contracts\RegistrarInterface */
