@@ -1,4 +1,5 @@
 <?php
+
 namespace TinyBlocks\Contracts;
 
 /**
@@ -9,23 +10,23 @@ namespace TinyBlocks\Contracts;
  */
 interface AssetInterface
 {
-    public function getName() : string;
+    public function getName(): string;
 
-    public function setName(string $name) : AssetInterface;
+    public function setName(string $name): AssetInterface;
 
-    public function getUrl() : string;
+    public function getUrl(): string;
 
-    public function setUrl(string $url) : AssetInterface;
+    public function setUrl(string $url): AssetInterface;
 
-    public function getDependencies() : array;
+    public function getDependencies(): array;
 
-    public function setDependencies(array $dependencies) : AssetInterface;
+    public function setDependencies(array $dependencies): AssetInterface;
 
-    public function getVersion() : string;
+    public function getVersion();
 
-    public function setVersion(string $version) : AssetInterface;
+    public function setVersion(string $version): AssetInterface;
 
-    public function getManifest() : object;
+    public function getManifest(): object;
 
-    public function setManifest(string $manifest) : AssetInterface;
+    public function setManifest(string $manifest): AssetInterface;
 }

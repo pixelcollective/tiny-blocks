@@ -27,5 +27,8 @@
     "psr-4": {
       "TinyBlocks\\": ["./", "./src", "./demo"]
     }
+  },
+  "require-dev": {
+    "barryvdh/laravel-ide-helper": "^2.6"
   }
 }

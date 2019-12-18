@@ -18,23 +18,20 @@ return [
     'views' => [
         'wordpress' => [
             'dir'   => WP_CONTENT_DIR,
-            'url'   => \content_url(),
             'cache' => $cachePath,
             'debug' => 0,
         ],
 
         'plugins' => [
             'dir' => WP_PLUGIN_DIR,
-            'url' => \plugins_url(),
             'cache' => $cachePath,
             'debug' => 0,
         ],
 
         'tinyblocks' => [
-            'dir'   => WP_CONTENT_DIR . '/plugins/tinyblocks/resources/views',
-            'url'   => \content_url() . '/plugins/tinyblocks/dist',
+            'dir'   => WP_CONTENT_DIR . '/plugins/tinyblocks/demo/resources/views',
             'cache' => $cachePath,
-            'debug' => 0,    
+            'debug' => 0,
         ]
     ],
 ];

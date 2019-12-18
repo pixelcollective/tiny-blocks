@@ -28,7 +28,7 @@ abstract class Block implements BlockInterface
 
     /**
      * View instance.
-     * @var string
+     * @var \TinyBlocks\Contracts\ViewInterface
      */
     public $viewInstance;
 
@@ -45,21 +45,20 @@ abstract class Block implements BlockInterface
     public $data;
 
     /**
-     * Editor scripts
-     * @var \Illuminate\Support\Collection
+     * Classname.
+     * @var string
      */
-    public $editorScripts;
+    public $className;
 
     /**
-     * Editor styles
-     * @var \Illuminate\Support\Collection
+     * Asset types
      */
-    public $editorStyles;
-
-    /**
-     * Public scripts
-     * @var \Illuminate\Support\Collection
-     */
+    public $assetTypes = [
+        'editorScripts',
+        'editorStyles',
+        'publicScripts',
+        'publicStyles',
+    ];
 
     /**
      * Class constructor.
@@ -70,22 +69,42 @@ abstract class Block implements BlockInterface
     {
         $this->container = $container;
 
-        $this->editorScripts = Collection::make();
-        $this->editorStyles  = Collection::make();
-        $this->publicScripts = Collection::make();
-        $this->publicStyles  = Collection::make();
+        $this->initializeAssetCollections();
 
-        $this->using();
+        $this->setupAssets();
     }
 
     /**
-     * Using
+     * Initialize asset collections
      *
      * @return void
      */
-    public function using()
+    public function initializeAssetCollections(): void
     {
-        // --
+        Collection::make($this->assetTypes)->each(function ($asset) {
+            $this->$asset = Collection::make();
+        });
+    }
+
+    /**
+     * Space to enqueue assets, etc.
+     *
+     * @return void
+     */
+    public function setupAssets(): void
+    {
+        return;
+    }
+
+    /**
+     * Data to be passed to block view template.
+     *
+     * @param  array
+     * @return array
+     */
+    public function with(array $data): array
+    {
+        return $data;
     }
 
     /**
@@ -93,7 +112,7 @@ abstract class Block implements BlockInterface
      *
      * @return string
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
@@ -104,7 +123,7 @@ abstract class Block implements BlockInterface
      * @param  string name
      * @return void
      */
-    public function setName(string $name) : void
+    public function setName(string $name): void
     {
         $this->name = $name;
     }
@@ -114,7 +133,7 @@ abstract class Block implements BlockInterface
      *
      * @return string path of view
      */
-    public function getView() : string
+    public function getView(): string
     {
         return $this->view;
     }
@@ -125,7 +144,7 @@ abstract class Block implements BlockInterface
      * @param  string path of view
      * @return void
      */
-    public function setView(string $view) : void
+    public function setView(string $view): void
     {
         $this->view = $view;
     }
@@ -136,27 +155,27 @@ abstract class Block implements BlockInterface
      * @param  View
      * @return void
      */
-    public function setViewInstance(View $viewInstance) : void
+    public function setViewInstance(View $viewInstance): void
     {
         $this->viewInstance = $viewInstance;
     }
 
     /**
      * Get view instance
-     * 
+     *
      * @return View
      */
-    public function getViewInstance() : View
+    public function getViewInstance(): View
     {
         return $this->viewInstance;
     }
 
     /**
      * Get blade template.
-     * 
+     *
      * @return string
      */
-    public function getTemplate() : string
+    public function getTemplate(): string
     {
         return $this->template;
     }
@@ -165,11 +184,13 @@ abstract class Block implements BlockInterface
      * Set template
      *
      * @param  string $template
-     * @return void
+     * @return \TinyPixel\Contracts\BlockInterface
      */
-    public function setTemplate(string $template) : void
+    public function setTemplate(string $template): BlockInterface
     {
         $this->template = $template;
+
+        return $this;
     }
 
     /**
@@ -177,9 +198,9 @@ abstract class Block implements BlockInterface
      *
      * @return string block data
      */
-    public function getData() : array
+    public function getData()
     {
-        return $this->data;
+        return $this->data ?: [];
     }
 
     /**
@@ -188,7 +209,7 @@ abstract class Block implements BlockInterface
      * @param  string block data
      * @return void
      */
-    public function setData(array $data) : void
+    public function setData(array $data): void
     {
         $this->data = $data;
     }
@@ -198,35 +219,38 @@ abstract class Block implements BlockInterface
      *
      * @return Asset
      */
-    public function makeAsset() : Asset
+    public function makeAsset(): Asset
     {
         return $this->container->make('asset');
     }
 
     /**
      * Get editor scripts
-     * 
+     *
      * @return \Illuminate\Support\Collection
      */
-    public function getEditorScripts() : Collection
+    public function getEditorScripts(): Collection
     {
         return $this->editorScripts;
     }
 
     /**
      * Add editor script
-     * 
+     *
      * @param  \TinyBlocks\Contracts\AssetInterface
      * @return void
      */
-    public function addEditorScript(Asset $editorScript) : void
+    public function addEditorScript(Asset $editorScript): void
     {
-        $this->editorScripts->put($editorScript->getName(), $editorScript);
+        $this->editorScripts->put(
+            $editorScript->getName(),
+            $editorScript
+        );
     }
 
     /**
      * Set editor scripts
-     * 
+     *
      * @param  \Illuminate\Support\Collection
      * @return void
      */
@@ -237,33 +261,54 @@ abstract class Block implements BlockInterface
 
     /**
      * Get editor styles
-     * 
+     *
      * @return \Illuminate\Support\Collection
      */
-    public function getEditorStyles() : Collection
+    public function getEditorStyles(): Collection
     {
         return $this->editorStyles;
     }
 
     /**
      * Add editor styles
-     * 
+     *
      * @param  \TinyBlocks\Contracts\AssetInterface
      * @return void
      */
-    public function addEditorStyle(Asset $editorStyle) : void
+    public function addEditorStyle(Asset $editorStyle): void
     {
         $this->editorStyles->put($editorStyle->getName(), $editorStyle);
     }
 
     /**
      * Set editor styles
-     * 
+     *
      * @param  \Illuminate\Support\Collection
      * @return void
      */
     public function setEditorStyles(Collection $editorStyles)
     {
         $this->editorStyles = $editorStyles;
+    }
+
+    /**
+     * Get classname
+     *
+     * @return string
+     */
+    public function getClassName(): string
+    {
+        return $this->className ?: '';
+    }
+
+    /**
+     * Set classname
+     *
+     * @param  string
+     * @return string
+     */
+    public function setClassName(string $className): void
+    {
+        $this->className = $className;
     }
 }

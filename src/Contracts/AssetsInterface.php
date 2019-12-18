@@ -1,4 +1,5 @@
 <?php
+
 namespace TinyBlocks\Contracts;
 
 use DI\ContainerBuilder;
@@ -14,5 +15,7 @@ use TinyBlocks\Contracts\BlockInterface as Block;
  */
 interface AssetsInterface
 {
-    // --
+    public function enqueueEditorAssets(Collection $blocks);
+
+    public function enqueuePublicAssets(Collection $blocks);
 }

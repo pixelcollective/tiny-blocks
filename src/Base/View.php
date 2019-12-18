@@ -41,8 +41,8 @@ abstract class View implements ViewInterface
     /**
      * Register view implementation
      */
-    public function register(object $config) : void
-    {           
+    public function register(object $config): void
+    {
         $this->setBaseDir($config->dir);
 
         $this->setCacheDir($config->cache);
@@ -56,7 +56,7 @@ abstract class View implements ViewInterface
      * @param  Psr\Container\ContainerInterface container instance
      * @return void
      */
-    public function boot() : void
+    public function boot(): void
     {
         $this->blade = new Blade(
             ...$this->getConfig()
@@ -67,14 +67,23 @@ abstract class View implements ViewInterface
      * Render a view.
      *
      * @param  \TinyBlocks\Contracts\BlockInterface block instance
-     * @return string rendered view
+     * @return void
      */
-    public function render(Block $block) : string
+    public function doRenderCallback(Block $block): void
     {
-        return $this->blade->run(
-            $block->getView(),
-            $block->getData()
-        );
+        register_block_type($block->getName(), [
+            'render_callback' => function ($attr, $innerContent) use ($block) {
+                $block->setData($block->with([
+                    'attr'    => (object) $attr,
+                    'content' => $innerContent,
+                ]));
+
+                return $this->blade->run(
+                    $block->getTemplate(),
+                    $block->getData()
+                );
+            }
+        ]);
     }
 
     /**
@@ -82,7 +91,7 @@ abstract class View implements ViewInterface
      *
      * @return array bladeone configuration
      */
-    public function getConfig() : array
+    public function getConfig(): array
     {
         return [
             $this->getBaseDir(),
@@ -96,18 +105,18 @@ abstract class View implements ViewInterface
      *
      * @return string
      */
-    public function getBaseDir() : string
+    public function getBaseDir(): string
     {
         return $this->baseDir;
     }
 
     /**
      * Set view base directory.
-     * 
+     *
      * @param  string
      * @return void
      */
-    public function setBaseDir(string $baseDir) : void
+    public function setBaseDir(string $baseDir): void
     {
         $this->baseDir = $baseDir;
     }
@@ -117,18 +126,18 @@ abstract class View implements ViewInterface
      *
      * @return string
      */
-    public function getCacheDir() : string
+    public function getCacheDir(): string
     {
         return $this->cacheDir;
     }
 
     /**
      * Set view cache directory.
-     * 
+     *
      * @param  string
      * @return void
      */
-    public function setCacheDir(string $cacheDir) : void
+    public function setCacheDir(string $cacheDir): void
     {
         $this->cacheDir = $cacheDir;
     }
@@ -138,18 +147,18 @@ abstract class View implements ViewInterface
      *
      * @return int debug constant
      */
-    public function getDebug() : int
+    public function getDebug(): int
     {
         return $this->debug;
     }
 
     /**
      * Set view debug mode.
-     * 
+     *
      * @param  int debug constant
      * @return void
      */
-    public function setDebug(int $debug) : void
+    public function setDebug(int $debug): void
     {
         $this->debug = $debug;
     }

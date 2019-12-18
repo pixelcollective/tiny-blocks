@@ -42,7 +42,7 @@ abstract class Asset implements AssetInterface
 
     /**
      * Manifest
-     * 
+     *
      * @var object
      */
     public $manifest;
@@ -54,21 +54,21 @@ abstract class Asset implements AssetInterface
 
     /**
      * Get asset name
-     * 
+     *
      * @return string
      */
-    public function getName() : string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * Set asset name
-     * 
+     *
      * @param  string
      * @return \TinyBlocks\Contracts\AssetInterface
      */
-    public function setName(string $name) : AssetInterface
+    public function setName(string $name): AssetInterface
     {
         $this->name = $name;
 
@@ -77,21 +77,21 @@ abstract class Asset implements AssetInterface
 
     /**
      * Get asset url
-     * 
+     *
      * @return string
      */
-    public function getUrl() : string
+    public function getUrl(): string
     {
         return $this->url;
     }
 
     /**
      * Set asset url
-     * 
+     *
      * @param  string
      * @return \TinyBlocks\Contracts\AssetInterface
      */
-    public function setUrl(string $url) : AssetInterface
+    public function setUrl(string $url): AssetInterface
     {
         $this->url = $url;
 
@@ -100,21 +100,21 @@ abstract class Asset implements AssetInterface
 
     /**
      * Get dependencies
-     * 
+     *
      * @return array
      */
-    public function getDependencies() : array
+    public function getDependencies(): array
     {
         return $this->dependencies ?: [];
     }
 
     /**
      * Set dependencies
-     * 
+     *
      * @param  array
      * @return \TinyBlocks\Contracts\AssetInterface
      */
-    public function setDependencies(array $dependencies) : AssetInterface
+    public function setDependencies(array $dependencies): AssetInterface
     {
         $this->dependencies = $dependencies;
 
@@ -123,45 +123,45 @@ abstract class Asset implements AssetInterface
 
     /**
      * Get version
-     * 
+     *
      * @return array
      */
-    public function getVersion() : string
+    public function getVersion()
     {
-        return $this->version ?: [];
+        return $this->version ?: null;
     }
 
     /**
      * Set version
-     * 
+     *
      * @param  string
      * @return \TinyBlocks\Contracts\AssetInterface
      */
-    public function setVersion(string $version) : AssetInterface
+    public function setVersion(string $version): AssetInterface
     {
         $this->version = $version;
-        
+
         return $this;
     }
 
     /**
      * Get manifest.
-     * 
+     *
      * @param  object
      * @return void
      */
-    public function getManifest() : object
+    public function getManifest(): object
     {
         return $this->manifest;
     }
 
     /**
      * Set manifest.
-     * 
+     *
      * @param  string
      * @return \TinyBlocks\Contracts\AssetInterface
      */
-    public function setManifest(string $manifest) : AssetInterface
+    public function setManifest(string $manifest): AssetInterface
     {
         if (file_exists($manifest)) {
             $this->manifest = (object) require $manifest;

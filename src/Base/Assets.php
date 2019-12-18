@@ -43,10 +43,17 @@ abstract class Assets implements AssetsInterface
      * @param  \Illuminate\Support\Collection
      * @return void
      */
-    public function enqueueEditorAssets(Collection $blocks) : void
+    public function enqueueEditorAssets(Collection $blocks): void
     {
-        $this->enqueueScripts($blocks, 'editor');
-        $this->enqueueStyles($blocks, 'editor');
+        $blocks->each(function ($block) {
+            $block->editorScripts->each(function ($script) {
+                $this->enqueueScript($script);
+            });
+
+            $block->editorStyles->each(function ($style) {
+                $this->enqueueStyle($style);
+            });
+        });
     }
 
     /**
@@ -55,53 +62,16 @@ abstract class Assets implements AssetsInterface
      * @param  \Illuminate\Support\Collection
      * @return void
      */
-    public function enqueuePublicAssets(Collection $blocks) : void
+    public function enqueuePublicAssets(Collection $blocks): void
     {
-        $this->enqueueScripts($blocks, 'public');
-        $this->enqueueStyles($blocks, 'public');
-    }
+        $blocks->each(function ($block) {
+            $block->publicScripts->each(function ($script) {
+                $this->enqueueScript($script);
+            });
 
-    /**
-     * Enqueue block editor scripts.
-     *
-     * @param  \Illuminate\Support\Collection
-     * @param  string where to enqueue
-     * @return void
-     */
-    public function enqueueScripts(Collection $blocks, string $location) : void {
-        $blocks->each(function ($block) use ($location) {
-            if (! isset($block->$location->script) ||
-                ! $block->$location->script) {
-                return;
-            }
-
-            $this->enqueueScript([
-                $block->$location->script->name,
-                $block->$location->script->url,
-                $block->$location->script->dependencies,
-                $block->$location->script->version,
-            ]);
-        });
-    }
-
-    /**
-     * Enqueue block styles.
-     *
-     * @param  \Illuminate\Support\Collection
-     * @param  string where to enqueue
-     * @return void
-     */
-    public function enqueueStyles(Collection $blocks, string $location) : void {
-        $blocks->each(function ($block) use ($location) {
-            if (! isset($block->$location->style) ||
-                ! $block->$location->style) {
-                return;
-            }
-
-            $this->enqueueStyle([
-                $block->$location->style->name,
-                $block->$location->style->url,
-            ]);
+            $block->publicStyles->each(function ($style) {
+                $this->enqueueStyle($style);
+            });
         });
     }
 
@@ -111,9 +81,14 @@ abstract class Assets implements AssetsInterface
      * @param  array  block
      * @return void
      */
-    public function enqueueScript(array $enqueueParams) : void
+    public function enqueueScript(Asset $script): void
     {
-        wp_enqueue_script(...$enqueueParams);
+        wp_enqueue_script(
+            $script->getName(),
+            $script->getUrl(),
+            $script->getManifest() ? $script->getManifest()->dependencies : $script->getDependencies(),
+            $script->getManifest() ? $script->getManifest()->version      : $script->getVersion(),
+        );
     }
 
     /**
@@ -122,8 +97,8 @@ abstract class Assets implements AssetsInterface
      * @param  array  block
      * @return void
      */
-    public function enqueueStyle(array $enqueueParams) : void
+    public function enqueueStyle(Asset $style): void
     {
-        wp_enqueue_style(...$enqueueParams);
+        wp_enqueue_style($style->getName(), $style->getUrl());
     }
 }

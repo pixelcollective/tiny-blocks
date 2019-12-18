@@ -1,15 +1,13 @@
-@extends($layout)
+<div class="{!! $attr->className !!}__column-a">
+  @isset($attr->heading)
+  <h2 class="{!! $attr->className !!}__column-a__heading">
+    {!! $attr->heading !!}
+  </h2>
+  @endisset
+</div>
 
-@section('block')
-  <div class="{!! $classname !!}__column-a">
-    @isset($attr->heading)
-      <h2 class="{!! $classname !!}__column-a__heading">
-        {!! $attr->heading !!}
-      </h2>
-    @endisset
-  </div>
-
-  <div class="{!! $classname !!}__column-b">
-    {!! $content !!}
-  </div>
-@endsection
+<div class="{!! $attr->className !!}__column-b">
+  @isset($content)
+  {!! $content !!}
+  @endisset
+</div>

@@ -17,7 +17,7 @@ abstract class Registrar implements RegistrarInterface
 {
     /**
      * View instances
-     * 
+     *
      * @var \Illuminate\Support\Collection
      */
     public $viewInstances;
@@ -30,7 +30,7 @@ abstract class Registrar implements RegistrarInterface
     public function __construct(Container $container)
     {
         $this->container = $container;
-        
+
         $this->config = $this->container->get('config');
         $this->views  = $this->config->get('views');
 
@@ -39,7 +39,7 @@ abstract class Registrar implements RegistrarInterface
 
     /**
      * Initialize blocks
-     * 
+     *
      * @param \Illuminate\Support\Collection $config
      */
     public function initializeBlocks()
@@ -51,7 +51,7 @@ abstract class Registrar implements RegistrarInterface
 
             $blockView = $blockInstance->getView();
 
-            if (! $blockViewInstance = $this->getViewInstance($blockView)) {
+            if (!$blockViewInstance = $this->getViewInstance($blockView)) {
                 $blockViewInstance = $this->makeViewInstance($blockView);
 
                 $this->collectViewInstance($blockView, $blockViewInstance);
@@ -64,20 +64,8 @@ abstract class Registrar implements RegistrarInterface
     }
 
     /**
-     * Add view instance to view instances collection
-     *
-     * @param  string
-     * @param  View
-     * @return void
-     */
-    public function collectViewInstance(string $viewKey, View $view) : void
-    {
-        $this->viewInstances->put($viewKey, $view);
-    }
-
-    /**
      * Get View instance
-     * 
+     *
      * @return View or null if none found
      */
     public function getViewInstance(string $viewKey)
@@ -86,14 +74,28 @@ abstract class Registrar implements RegistrarInterface
     }
 
     /**
+     * Add view instance to view instances collection
+     *
+     * @param  string
+     * @param  View
+     * @return void
+     */
+    public function collectViewInstance(string $viewKey, View $view): void
+    {
+        $this->viewInstances->put($viewKey, $view);
+    }
+
+    /**
      * Make View from container
-     * 
+     *
      * @return object
      */
     public function makeViewInstance($viewKey)
     {
         $view = $this->container->make('view');
+
         $view->register((object) $this->container->get('views')[$viewKey]);
+
         $view->boot();
 
         return $view;
@@ -101,12 +103,12 @@ abstract class Registrar implements RegistrarInterface
 
     /**
      * Register blocks.
-     * 
+     *
      * Called on init.
      *
      * @return void
      */
-    public function register() : void
+    public function register(): void
     {
         /** Blocks aren't ready until init */
         $this->blocks = $this->container->get('blocks');
@@ -123,17 +125,24 @@ abstract class Registrar implements RegistrarInterface
 
     /**
      * Filter block data.
-     * 
+     *
      * @return void
      */
-    public function filterBlockData() : void
+    public function filterBlockData(): void
     {
         add_filter('render_block_data', function (array $block) {
-            $block['attrs'] = Collection::make(
-                $block['attrs'],
-            )->map(function ($attr) {
-                return is_array($attr) ? (object) $attr : $attr;
-            })->toArray();
+            $attributes = Collection::make($block['attrs'])
+                ->map(function ($attr) {
+                    return is_array($attr) ? (object) $attr : $attr;
+                });
+
+            $this->blocks->each(function ($blockInstance) use (&$attributes) {
+                if ($className = $blockInstance->getClassName()) {
+                    $attributes->put('className', $className);
+                }
+            });
+
+            $block['attrs'] = $attributes->toArray();
 
             return $block;
         }, 10, 2);
@@ -145,19 +154,12 @@ abstract class Registrar implements RegistrarInterface
      * @param  Collection $blocks
      * @return void
      */
-    public function registerWithServer() : void
+    public function registerWithServer(): void
     {
-        $this->blocks->each(function (Block $block) { 
-            register_block_type($block->getName(), [
-                'render_callback' => function (array $attr, string $innerContent) use ($block) {
-                    $block->setData([
-                        'attr'    => $attr,
-                        'content' => $innerContent,
-                    ]);
+        $this->blocks->each(function (Block $block) {
+            $view = $block->getViewInstance();
 
-                    return $this->block->getViewInstance()->render($block);
-                }
-            ]);
+            $view->doRenderCallback($block);
         });
     }
 }

@@ -2,6 +2,7 @@
 
 namespace TinyBlocks;
 
+use function \add_action;
 use Illuminate\Support\Collection;
 use DI\ContainerBuilder;
 use Psr\Container\ContainerInterface as Container;
@@ -78,6 +79,7 @@ class App implements Application
      */
     public function __construct(string $config = null)
     {
+
         /** Configure and build the container. */
         $this->container = (new ContainerBuilder)
             ->addDefinitions($this->config($config))
@@ -96,9 +98,9 @@ class App implements Application
      * @param  string filepath of override configs
      * @return \TinyBlocks\App
      */
-    public static function getInstance(string $config = null) : App
+    public static function getInstance(string $config = null): App
     {
-        if (! self::$instance) {
+        if (!self::$instance) {
             self::$instance = new App($config);
         }
 
@@ -110,7 +112,7 @@ class App implements Application
      *
      * @return void
      */
-    public function initialize() : void
+    public function initialize(): void
     {
         $this->initializeBlocks();
     }
@@ -120,7 +122,7 @@ class App implements Application
      *
      * @return void
      */
-    public function initializeBlocks() : void
+    public function initializeBlocks(): void
     {
         $this->blocks = Collection::make();
     }
@@ -130,41 +132,43 @@ class App implements Application
      *
      * @return \Psr\Container\ContainerInterface
      */
-    public function container() : Container
-    {        
+    public function container(): Container
+    {
         return $this->container;
     }
 
     /**
      * Register hooks
      *
+     * @uses \add_action
+     *
      * @return void
      */
-    public function registerHooks() : void
+    public function registerHooks(): void
     {
         add_action('init', function () {
             if ($this->blocks->isNotEmpty()) {
-                $this->makeRegistrar();
+                $this->registrar = $this->makeRegistrar();
 
                 $this->container->set('blocks', $this->blocks);
 
-                $this->registrar()->register($this->blocks);
+                $this->registrar->register($this->blocks);
             }
         });
 
         add_action('enqueue_block_editor_assets', function () {
             if ($this->blocks->isNotEmpty()) {
-                $this->makeAssets();
+                $this->assets = $this->makeAssets();
 
-                $this->assets()->enqueueEditorAssets($this->blocks);
+                $this->assets->enqueueEditorAssets($this->blocks);
             }
         });
 
         add_action('wp_enqueue_scripts', function () {
             if ($this->blocks->isNotEmpty()) {
-                $this->makeViews();
+                $this->assets = $this->makeAssets();
 
-                $this->assets()->enqueuePublicAssets($this->blocks);
+                $this->assets->enqueuePublicAssets($this->blocks);
             }
         });
     }
@@ -174,9 +178,9 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\BlockInterface
      */
-    public function make() : Block
+    public function make(): Block
     {
-        return $this->container()->make('block');
+        return $this->container->make('block');
     }
 
     /**
@@ -184,11 +188,9 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\RegistrarInterface
      */
-    public function makeRegistrar() : Registrar
+    public function makeRegistrar(): Registrar
     {
-        $this->registrar = $this->container()->make('registrar');
-
-        return $this->registrar;
+        return $this->registrar = $this->container->make('registrar');
     }
 
     /**
@@ -196,28 +198,9 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\AssetsInterface
      */
-    public function makeAssets() : Assets
+    public function makeAssets(): Assets
     {
-        return $this->assets = $this->container()->make('assets');
-    }
-
-    /**
-     * Instantiate view provider
-     *
-     * @return \Illuminate\Support\Collection
-     */
-    public function makeViews() : Collection
-    {
-        $viewInstances = Collection::make();
-
-        Collection::make($this->container->get('views'))
-            ->each(function ($viewConfig, $view) use ($viewInstances) {
-                $view = $this->container()->make('view');
-
-                $viewInstances->push($view, $view->config($viewConfig));
-            });
-
-        return $this->viewInstances = $viewInstances;
+        return $this->assets = $this->container->make('assets');
     }
 
     /**
@@ -226,7 +209,7 @@ class App implements Application
      * @param  \TinyBlocks\Contracts\BlockInterface
      * @return \Illuminate\Support\Collection
      */
-    public function addBlock($block) : Collection
+    public function addBlock($block): Collection
     {
         $block = is_string($block)
             ? new $block($this->container())
@@ -241,7 +224,7 @@ class App implements Application
      * @param  string block name
      * @return \TinyBlocks\Contracts\BlockInterface
      */
-    public function block(string $blockName) : Block
+    public function block(string $blockName): Block
     {
         return $this->blocks()->get($blockName);
     }
@@ -251,7 +234,7 @@ class App implements Application
      *
      * @return \Illuminate\Support\Collection
      */
-    public function blocks() : Collection
+    public function blocks(): Collection
     {
         return $this->blocks;
     }
@@ -261,7 +244,7 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\View;
      */
-    public function view(string $viewKey) : View
+    public function view(string $viewKey): View
     {
         return $this->viewInstances->get($viewKey);
     }
@@ -271,7 +254,7 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\RegistrarInterface;
      */
-    public function registrar() : Registrar
+    public function registrar(): Registrar
     {
         return $this->registrar;
     }
@@ -281,14 +264,14 @@ class App implements Application
      *
      * @return \TinyBlocks\Contracts\AssetsInterface;
      */
-    public function assets() : Assets
+    public function assets(): Assets
     {
         return $this->assets;
     }
 
     /**
      * Get config
-     * 
+     *
      * @return \Illuminate\Support\Collection
      */
     public function getConfig()
@@ -302,32 +285,27 @@ class App implements Application
      * @param  array filepath of override configs
      * @return array
      */
-    public function config($configOverride = null) : array
+    public function config($configOverride = null): array
     {
-        /** 
-         * Create configuration from defaults, user
-         * supplied values, or a mixture of the two 
-         * (should the user not supply all requried configs)
-         */
-        $this->config = ! $configOverride
-            ? Collection::make(self::$configFiles)
+        $this->config = Collection::make();
+
+        if (!$configOverride) {
+            $this->config = Collection::make(self::$configFiles)
                 ->mapWithKeys(function ($file) {
                     return $this->requireCoreConfigFile($file);
-                })
+                });
+        } else {
+            Collection::make(glob("{$configOverride}/*.php"))
+                ->mapWithKeys(function ($file) {
+                    return require $file;
+                });
 
-            : (function() {
-                Collection::make(glob("{$configOverride}/*.php"))
-                    ->mapWithKeys(function ($file) {
-                        return require $file;
-                    });
-
-                Collection::make(self::$configFiles)
-                    ->each(function ($file) {
-                        if (! $config->get($file)) {
-                            $config->put($file, $this->requireCoreConfigFile($file));
-                        }
-                    });
-            })();
+            Collection::make(self::$configFiles)->each(function ($file) {
+                if (!$this->config->get($file)) {
+                    $this->config->put($file, $this->requireCoreConfigFile($file));
+                }
+            });
+        }
 
         /** Return config as array */
         return $this->config->toArray();
@@ -339,7 +317,7 @@ class App implements Application
      * @param  string file
      * @return array
      */
-    public function requireCoreConfigFile(string $file) : array
+    public function requireCoreConfigFile(string $file): array
     {
         return require realpath(__DIR__ . "/../config/{$file}.php");
     }

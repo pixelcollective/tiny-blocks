@@ -1,10 +1,6 @@
 <?php
-namespace TinyBlocks\Contracts;
 
-use DI\ContainerBuilder;
-use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\BlockInterface as Block;
+namespace TinyBlocks\Contracts;
 
 /**
  * Registrar Interface
@@ -14,5 +10,5 @@ use TinyBlocks\Contracts\BlockInterface as Block;
  */
 interface RegistrarInterface
 {
-    // --
+    public function register();
 }
