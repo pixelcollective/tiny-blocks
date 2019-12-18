@@ -25,10 +25,16 @@
       "vendor/tightenco/collect/src/Collect/Support/alias.php"
     ],
     "psr-4": {
-      "TinyBlocks\\": ["./", "./src", "./demo"]
+      "TinyBlocks\\": [
+        "./",
+        "./src",
+        "./demo"
+      ]
     }
   },
-  "require-dev": {
-    "barryvdh/laravel-ide-helper": "^2.6"
+  "scripts": {
+    "lint": [
+      "phpcs --ignore=vendor,demo --extensions=php --standard=PSR12 ."
+    ]
   }
 }

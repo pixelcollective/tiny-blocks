@@ -47,6 +47,9 @@ abstract class Asset implements AssetInterface
      */
     public $manifest;
 
+    /**
+     * Class constructor.
+     */
     public function __construct()
     {
         return $this;
