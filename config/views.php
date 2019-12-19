@@ -27,11 +27,5 @@ return [
             'cache' => $cachePath,
             'debug' => 0,
         ],
-
-        'tinyblocks' => [
-            'dir'   => WP_CONTENT_DIR . '/plugins/tinyblocks/demo/resources/views',
-            'cache' => $cachePath,
-            'debug' => 0,
-        ]
     ],
 ];

@@ -1,7 +1,7 @@
 {
   "name": "tinypixel/block-modules",
   "type": "wordpress-plugin",
-  "version": "0.3.0",
+  "version": "0.9.0",
   "description": "For consummate blockbuilders",
   "license": "MIT",
   "authors": [
