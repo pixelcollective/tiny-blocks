@@ -132,6 +132,8 @@ Substitute configuration files in `App::getInstance()`.
 App::getInstance(__DIR__ . '/config');
 ```
 
+Your `config` directory does not have to include all the files from the `config` directory. If something is missing the default will be used instead. Most people will probably only want to provide their own `config/views.php` file while leaving the rest untouched, which is fine. This is also where we will start in our review of the options and features provided by this dir.
+
 ### views.php
 
 The default view configuration is as follows:
