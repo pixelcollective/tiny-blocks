@@ -19,7 +19,7 @@ This framework is under active development.
 Use `composer` to install the package to your project:
 
 ```sh
-composer require tinypixel/tinyblocks
+composer require tiny-pixel/blocks
 ```
 
 ## Block registration

@@ -1,6 +1,6 @@
 {
-  "name": "tinypixel/block-modules",
-  "type": "wordpress-plugin",
+  "name": "tiny-pixel/blocks",
+  "type": "library",
   "version": "0.9.0",
   "description": "For consummate blockbuilders",
   "license": "MIT",
