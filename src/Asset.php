@@ -2,17 +2,17 @@
 
 namespace TinyBlocks;
 
-use TinyBlocks\Base\Registrar as BaseRegistrar;
+use TinyBlocks\Base\Asset as BaseAsset;
 
 /**
- * Registrar
+ * Asset
  *
  * @since   0.0.1
  * @version 0.3.0
  * @license MIT
  * @author  Kelly Mears <developers@tinypixel.dev>
  */
-class Registrar extends BaseRegistrar
+class Asset extends BaseAsset
 {
     // --
 }
