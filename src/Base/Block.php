@@ -281,6 +281,17 @@ abstract class Block implements BlockInterface
     }
 
     /**
+     * Add public styles
+     *
+     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @return void
+     */
+    public function addPublicStyle(Asset $publicStyle): void
+    {
+        $this->publicStyles->put($publicStyle->getName(), $publicStyle);
+    }
+
+    /**
      * Set editor styles
      *
      * @param  \Illuminate\Support\Collection
