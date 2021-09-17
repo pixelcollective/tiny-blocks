@@ -2,7 +2,6 @@
 
 namespace TinyBlocks\Base;
 
-use Illuminate\Support\Collection;
 use TinyBlocks\Contracts\AssetInterface;
 
 /**
@@ -48,14 +47,6 @@ abstract class Asset implements AssetInterface
     public $manifest;
 
     /**
-     * Class constructor.
-     */
-    public function __construct()
-    {
-        return $this;
-    }
-
-    /**
      * Get asset name
      *
      * @return string
@@ -69,7 +60,7 @@ abstract class Asset implements AssetInterface
      * Set asset name
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setName(string $name): AssetInterface
     {
@@ -92,7 +83,7 @@ abstract class Asset implements AssetInterface
      * Set asset url
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setUrl(string $url): AssetInterface
     {
@@ -115,7 +106,7 @@ abstract class Asset implements AssetInterface
      * Set dependencies
      *
      * @param  array
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setDependencies(array $dependencies): AssetInterface
     {
@@ -138,7 +129,7 @@ abstract class Asset implements AssetInterface
      * Set version
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setVersion(string $version): AssetInterface
     {
@@ -161,7 +152,7 @@ abstract class Asset implements AssetInterface
      * Set manifest.
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setManifest(string $manifest): AssetInterface
     {

@@ -3,7 +3,7 @@
 namespace TinyBlocks\Contracts;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
+use Psr\Container\ContainerInterface;
 use TinyBlocks\Contracts\AssetsInterface as Assets;
 use TinyBlocks\Contracts\BlockInterface as Block;
 use TinyBlocks\Contracts\RegistrarInterface as Registrar;
@@ -17,7 +17,7 @@ use TinyBlocks\Contracts\ViewInterface as View;
  */
 interface ApplicationInterface
 {
-    public function container(): Container;
+    public function container(): ContainerInterface;
 
     public function make(): Block;
 

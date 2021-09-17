@@ -1,7 +1,7 @@
 {
   "name": "tiny-pixel/blocks",
   "type": "library",
-  "version": "0.9.0",
+  "version": "1.0.0",
   "description": "For consummate blockbuilders",
   "license": "MIT",
   "authors": [
@@ -14,15 +14,15 @@
   "prefer-stable": true,
   "require": {
     "php": ">=7.1",
-    "composer/installers": "v1.4",
-    "tightenco/collect": "^5.8",
+    "composer/installers": "v2",
+    "illuminate/collections": "^8.61",
     "eftec/bladeone": "^3.24",
     "php-di/php-di": "^6.0"
   },
   "autoload": {
     "files": [
-      "vendor/tightenco/collect/src/Collect/Support/helpers.php",
-      "vendor/tightenco/collect/src/Collect/Support/alias.php"
+      "vendor/illuminate/collections/src/Collect/Support/helpers.php",
+      "vendor/illuminate/collections/src/Collect/Support/alias.php"
     ],
     "psr-4": {
       "TinyBlocks\\": [

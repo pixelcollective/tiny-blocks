@@ -2,10 +2,12 @@
 
 namespace TinyBlocks\Base;
 
-use eftec\bladeone\BladeOne as Blade;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\BlockInterface as Block;
+use eftec\bladeone\BladeOne;
+use Psr\Container\ContainerInterface;
+use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\ViewInterface;
+
+use function \register_block_type;
 
 /**
  * Abstract View
@@ -14,24 +16,40 @@ use TinyBlocks\Contracts\ViewInterface;
  */
 abstract class View implements ViewInterface
 {
-    /** @var eftec\bladeone\BladeOne */
-    protected $blade;
+    /**
+     * View engine 
+     * 
+     * @var BladeOne 
+     */
+    protected BladeOne $blade;
 
-    /** @var string */
-    protected $baseDir;
+    /** 
+     * Base directory
+     * 
+     * @var string
+     */
+    protected string $baseDir;
 
-    /** @var string */
-    protected $cacheDir;
+    /** 
+     * Cache directory
+     * 
+     * @var string 
+     */
+    protected string $cacheDir;
 
-    /** @var int */
-    protected $debug;
+    /**
+     * Debug mode enabled
+     * 
+     * @var bool
+     */
+    protected bool $debug;
 
     /**
      * Class constructor
      *
-     * @param \Psr\Container\ContainerInterface
+     * @param ContainerInterface
      */
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
@@ -40,25 +58,25 @@ abstract class View implements ViewInterface
 
     /**
      * Register view implementation
+     * 
+     * @param object config
      */
     public function register(object $config): void
     {
         $this->setBaseDir($config->dir);
-
         $this->setCacheDir($config->cache);
-
         $this->setDebug($config->debug);
     }
 
     /**
      * Boot view implementation
      *
-     * @param  Psr\Container\ContainerInterface container instance
+     * @param  ContainerInterface container instance
      * @return void
      */
     public function boot(): void
     {
-        $this->blade = new Blade(
+        $this->blade = new BladeOne(
             ...$this->getConfig()
         );
     }
@@ -66,10 +84,10 @@ abstract class View implements ViewInterface
     /**
      * Render a view.
      *
-     * @param  \TinyBlocks\Contracts\BlockInterface block instance
+     * @param  BlockInterface block instance
      * @return void
      */
-    public function doRenderCallback(Block $block): void
+    public function doRenderCallback(BlockInterface $block): void
     {
         register_block_type($block->getName(), [
             'render_callback' => function ($attr, $innerContent) use ($block) {

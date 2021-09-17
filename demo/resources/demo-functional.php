@@ -19,5 +19,4 @@ $script = $myBlock->makeAsset()
   ->setUrl(WP_PLUGIN_DIR . '/tinyblocks/dist/editor.js')
   ->setManifest(plugins_url() . '/tinyblocks/dist/editor.manifest.php');
 
-/**  */
 $myBlock->addEditorScript($script);

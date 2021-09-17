@@ -8,6 +8,8 @@ use TinyBlocks\Contracts\BlockInterface as Block;
 use TinyBlocks\Contracts\ViewInterface as View;
 use TinyBlocks\Contracts\RegistrarInterface;
 
+use function \add_filter;
+
 /**
  * Abstract Registrar
  *
@@ -18,7 +20,7 @@ abstract class Registrar implements RegistrarInterface
     /**
      * View instances
      *
-     * @var \Illuminate\Support\Collection
+     * @var Collection
      */
     public $viewInstances;
 
@@ -40,7 +42,7 @@ abstract class Registrar implements RegistrarInterface
     /**
      * Initialize blocks
      *
-     * @param \Illuminate\Support\Collection $config
+     * @param Collection $config
      */
     public function initializeBlocks()
     {
@@ -131,10 +133,7 @@ abstract class Registrar implements RegistrarInterface
     public function filterBlockData(): void
     {
         add_filter('render_block_data', function (array $block) {
-            $attributes = Collection::make($block['attrs'])
-                ->map(function ($attr) {
-                    return is_array($attr) ? (object) $attr : $attr;
-                });
+            $attributes = Collection::make($block['attrs']);
 
             $this->blocks->each(function ($blockInstance) use (&$attributes) {
                 if ($className = $blockInstance->getClassName()) {

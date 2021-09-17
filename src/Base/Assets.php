@@ -3,8 +3,11 @@
 namespace TinyBlocks\Base;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
+use Psr\Container\ContainerInterface;
 use TinyBlocks\Contracts\AssetsInterface;
+
+use function \wp_enqueue_script;
+use function \wp_enqueue_style;
 
 /**
  * Abstract Assets
@@ -15,22 +18,24 @@ abstract class Assets implements AssetsInterface
 {
     /**
      * Application container
-     * @var \Psr\Container\ContainerInterface
+     * 
+     * @var ContainerInterface
      */
     public $container;
 
     /**
      * Blocks collection
-     * @var \Illuminate\Support\Collection
+     * 
+     * @var Collection
      */
     public $blocks;
 
     /**
      * Class constructor.
      *
-     * @param \Psr\Container\ContainerInterface
+     * @param ContainerInterface
      */
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
@@ -40,7 +45,7 @@ abstract class Assets implements AssetsInterface
     /**
      * Enqueue editor assets.
      *
-     * @param  \Illuminate\Support\Collection
+     * @param Collection
      * @return void
      */
     public function enqueueEditorAssets(Collection $blocks): void
@@ -59,7 +64,7 @@ abstract class Assets implements AssetsInterface
     /**
      * Enqueue public assets.
      *
-     * @param  \Illuminate\Support\Collection
+     * @param  Collection
      * @return void
      */
     public function enqueuePublicAssets(Collection $blocks): void
@@ -87,7 +92,7 @@ abstract class Assets implements AssetsInterface
             $script->getName(),
             $script->getUrl(),
             $script->getManifest() ? $script->getManifest()->dependencies : $script->getDependencies(),
-            $script->getManifest() ? $script->getManifest()->version      : $script->getVersion(),
+            $script->getManifest() ? $script->getManifest()->version : $script->getVersion(),
         );
     }
 

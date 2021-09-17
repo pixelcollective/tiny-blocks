@@ -2,22 +2,23 @@
 
 namespace TinyBlocks;
 
-use function \add_action;
 use Illuminate\Support\Collection;
 use DI\ContainerBuilder;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\ApplicationInterface as Application;
-use TinyBlocks\Contracts\AssetsInterface as Assets;
-use TinyBlocks\Contracts\BlockInterface as Block;
-use TinyBlocks\Contracts\RegistrarInterface as Registrar;
-use TinyBlocks\Contracts\ViewInterface as View;
+use Psr\Container\ContainerInterface;
+use TinyBlocks\Contracts\ApplicationInterface;
+use TinyBlocks\Contracts\AssetsInterface;
+use TinyBlocks\Contracts\BlockInterface;
+use TinyBlocks\Contracts\RegistrarInterface;
+use TinyBlocks\Contracts\ViewInterface;
+
+use function \add_action;
 
 /**
  * Application
  *
  * @package TinyBlocks
  */
-class App implements Application
+class App implements ApplicationInterface
 {
     /**
      * Core configuration files
@@ -32,45 +33,44 @@ class App implements Application
     /**
      * The application instance.
      *
-     * @var static \TinyBlocks\App
+     * @var ApplicationInterface
      */
     public static $instance;
-
 
     /**
      * The dependency injection container.
      *
-     * @var \DI\Container
+     * @var ContainerInterface
      */
-    public $container;
+    public ContainerInterface $container;
 
     /**
      * Blocks collection
      *
-     * @var \Illuminate\Support\Collection
+     * @var Collection
      */
-    public $blocks;
+    public Collection $blocks;
 
     /**
      * Registrar
      *
-     * @var \TinyBlocks\Contracts\RegistrarInterface
+     * @var RegistrarInterface
      */
-    public $registrar;
+    public RegistrarInterface $registrar;
 
     /**
      * Assets
      *
-     * @var \TinyBlocks\Contracts\AssetsInterface
+     * @var AssetsInterface
      */
-    public $assets;
+    public AssetsInterface $assets;
 
     /**
      * View
      *
-     * @var \TinyBlocks\Contracts\ViewInterface
+     * @var ViewInterface
      */
-    public $view;
+    public ViewInterface $view;
 
     /**
      * Class constructor.
@@ -79,7 +79,6 @@ class App implements Application
      */
     public function __construct(string $config = null)
     {
-
         /** Configure and build the container. */
         $this->container = (new ContainerBuilder)
             ->addDefinitions($this->config($config))
@@ -96,9 +95,9 @@ class App implements Application
      * Singleton constructor.
      *
      * @param  string filepath of override configs
-     * @return \TinyBlocks\App
+     * @return ApplicationInterface
      */
-    public static function getInstance(string $config = null): App
+    public static function getInstance(string $config = null): ApplicationInterface
     {
         if (!self::$instance) {
             self::$instance = new App($config);
@@ -130,9 +129,9 @@ class App implements Application
     /**
      * Get container.
      *
-     * @return \Psr\Container\ContainerInterface
+     * @return ContainerInterface
      */
-    public function container(): Container
+    public function container(): ContainerInterface
     {
         return $this->container;
     }
@@ -176,9 +175,9 @@ class App implements Application
     /**
      * Make a block instance
      *
-     * @return \TinyBlocks\Contracts\BlockInterface
+     * @return BlockInterface
      */
-    public function make(): Block
+    public function make(): BlockInterface
     {
         return $this->container->make('block');
     }
@@ -186,9 +185,9 @@ class App implements Application
     /**
      * Instantiate registrar
      *
-     * @return \TinyBlocks\Contracts\RegistrarInterface
+     * @return RegistrarInterface
      */
-    public function makeRegistrar(): Registrar
+    public function makeRegistrar(): RegistrarInterface
     {
         return $this->registrar = $this->container->make('registrar');
     }
@@ -196,9 +195,9 @@ class App implements Application
     /**
      * Instantiate assets manager
      *
-     * @return \TinyBlocks\Contracts\AssetsInterface
+     * @return AssetsInterface
      */
-    public function makeAssets(): Assets
+    public function makeAssets(): AssetsInterface
     {
         return $this->assets = $this->container->make('assets');
     }
@@ -206,8 +205,8 @@ class App implements Application
     /**
      * Add a block instance
      *
-     * @param  \TinyBlocks\Contracts\BlockInterface
-     * @return \Illuminate\Support\Collection
+     * @param  BlockInterface
+     * @return Collection
      */
     public function addBlock($block): Collection
     {
@@ -222,7 +221,7 @@ class App implements Application
      * Get a block instance
      *
      * @param  string block name
-     * @return \TinyBlocks\Contracts\BlockInterface
+     * @return BlockInterface
      */
     public function block(string $blockName): Block
     {
@@ -232,7 +231,7 @@ class App implements Application
     /**
      * Get the collection of blocks
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function blocks(): Collection
     {
@@ -242,9 +241,9 @@ class App implements Application
     /**
      * Get view provider
      *
-     * @return \TinyBlocks\Contracts\View;
+     * @return ViewInterface
      */
-    public function view(string $viewKey): View
+    public function view(string $viewKey): ViewInterface
     {
         return $this->viewInstances->get($viewKey);
     }
@@ -252,9 +251,9 @@ class App implements Application
     /**
      * Get registrar
      *
-     * @return \TinyBlocks\Contracts\RegistrarInterface;
+     * @return RegistrarInterface
      */
-    public function registrar(): Registrar
+    public function registrar(): RegistrarInterface
     {
         return $this->registrar;
     }
@@ -262,9 +261,9 @@ class App implements Application
     /**
      * Get assets manager
      *
-     * @return \TinyBlocks\Contracts\AssetsInterface;
+     * @return AssetsInterface
      */
-    public function assets(): Assets
+    public function assets(): AssetsInterface
     {
         return $this->assets;
     }
@@ -272,7 +271,7 @@ class App implements Application
     /**
      * Get config
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getConfig()
     {
@@ -280,22 +279,22 @@ class App implements Application
     }
 
     /**
-     * Writes configuration to container.
+     * Adds configuration to container.
      *
      * @param  array filepath of override configs
      * @return array
      */
-    public function config($configOverride = null): array
+    public function config($override = null): array
     {
         $this->config = Collection::make();
 
-        if (!$configOverride) {
+        if (!$override) {
             $this->config = Collection::make(self::$configFiles)
                 ->mapWithKeys(function ($file) {
                     return $this->requireCoreConfigFile($file);
                 });
         } else {
-            Collection::make(glob("{$configOverride}/*.php"))
+            Collection::make(glob("{$override}/*.php"))
                 ->mapWithKeys(function ($file) {
                     return require $file;
                 });
@@ -307,7 +306,6 @@ class App implements Application
             });
         }
 
-        /** Return config as array */
         return $this->config->toArray();
     }
 

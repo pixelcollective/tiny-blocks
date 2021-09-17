@@ -2,9 +2,7 @@
 
 namespace TinyBlocks\Contracts;
 
-use \Illuminate\Support\Collection;
-use \Psr\Container\ContainerInterface as Container;
-use \TinyBlocks\Contracts\BlockInterface as Block;
+use TinyBlocks\Contracts\BlockInterface as Block;
 
 /**
  * View interface

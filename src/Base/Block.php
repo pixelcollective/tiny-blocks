@@ -3,9 +3,10 @@
 namespace TinyBlocks\Base;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\ViewInterface as View;
+use Psr\Container\ContainerInterface;
+use TinyBlocks\Contracts\ViewInterface;
 use TinyBlocks\Contracts\BlockInterface;
+use TinyBlocks\Contracts\AssetInterface;
 
 /**
  * Abstract Block
@@ -15,40 +16,46 @@ use TinyBlocks\Contracts\BlockInterface;
 abstract class Block implements BlockInterface
 {
     /**
-     * Block name.
+     * Block name
+     * 
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
-     * View engine.
+     * View template
+     * 
      * @var string
      */
-    public $view;
+    public string $view;
 
     /**
-     * View instance.
-     * @var \TinyBlocks\Contracts\ViewInterface
+     * View instance
+     * 
+     * @var ViewInterface
      */
-    public $viewInstance;
+    public ViewInterface $viewInstance;
 
     /**
      * Template file
+     * 
      * @var string
      */
-    public $template;
+    public string $template;
 
     /**
      * Data
+     * 
      * @var array
      */
-    public $data;
+    public array $data;
 
     /**
-     * Classname.
+     * CSS classes
+     * 
      * @var string
      */
-    public $className;
+    public string $className;
 
     /**
      * Asset types
@@ -63,9 +70,9 @@ abstract class Block implements BlockInterface
     /**
      * Class constructor.
      *
-     * @param \Psr\Container\ContainerInterface
+     * @param ContainerInterface
      */
-    public function __construct(Container $container)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
 
@@ -152,10 +159,10 @@ abstract class Block implements BlockInterface
     /**
      * Set view instance
      *
-     * @param  View
+     * @param  ViewInterface
      * @return void
      */
-    public function setViewInstance(View $viewInstance): void
+    public function setViewInstance(ViewInterface $viewInstance): void
     {
         $this->viewInstance = $viewInstance;
     }
@@ -163,7 +170,7 @@ abstract class Block implements BlockInterface
     /**
      * Get view instance
      *
-     * @return View
+     * @return ViewInterface
      */
     public function getViewInstance(): View
     {
@@ -184,7 +191,7 @@ abstract class Block implements BlockInterface
      * Set template
      *
      * @param  string $template
-     * @return \TinyPixel\Contracts\BlockInterface
+     * @return BlockInterface
      */
     public function setTemplate(string $template): BlockInterface
     {
@@ -227,7 +234,7 @@ abstract class Block implements BlockInterface
     /**
      * Get editor scripts
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getEditorScripts(): Collection
     {
@@ -237,7 +244,7 @@ abstract class Block implements BlockInterface
     /**
      * Add editor script
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
     public function addEditorScript(Asset $editorScript): void
@@ -251,7 +258,7 @@ abstract class Block implements BlockInterface
     /**
      * Set editor scripts
      *
-     * @param  \Illuminate\Support\Collection
+     * @param  Collection
      * @return void
      */
     public function setEditorScripts(Collection $editorScripts)
@@ -262,7 +269,7 @@ abstract class Block implements BlockInterface
     /**
      * Get editor styles
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getEditorStyles(): Collection
     {
@@ -272,7 +279,7 @@ abstract class Block implements BlockInterface
     /**
      * Add editor styles
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
     public function addEditorStyle(Asset $editorStyle): void
@@ -283,10 +290,10 @@ abstract class Block implements BlockInterface
     /**
      * Add public styles
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
-    public function addPublicStyle(Asset $publicStyle): void
+    public function addPublicStyle(AssetInterface $publicStyle): void
     {
         $this->publicStyles->put($publicStyle->getName(), $publicStyle);
     }
@@ -294,7 +301,7 @@ abstract class Block implements BlockInterface
     /**
      * Set editor styles
      *
-     * @param  \Illuminate\Support\Collection
+     * @param  Collection
      * @return void
      */
     public function setEditorStyles(Collection $editorStyles)
