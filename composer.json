@@ -23,10 +23,6 @@
     "roots/wordpress": "dev-master"
   },
   "autoload": {
-    "files": [
-      "vendor/illuminate/collections/src/Collect/Support/helpers.php",
-      "vendor/illuminate/collections/src/Collect/Support/alias.php"
-    ],
     "psr-4": {
       "TinyBlocks\\": [
         "./",
