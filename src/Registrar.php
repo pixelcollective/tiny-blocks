@@ -2,17 +2,19 @@
 
 namespace TinyBlocks;
 
-use TinyBlocks\Base\Registrar as BaseRegistrar;
+use TinyBlocks\Contracts\ViewInterface;
+use TinyBlocks\Base\Registrar as Base;
+use TinyBlocks\View;
 
-/**
- * Registrar
- *
- * @since   0.0.1
- * @version 0.3.0
- * @license MIT
- * @author  Kelly Mears <developers@tinypixel.dev>
- */
-class Registrar extends BaseRegistrar
+class Registrar extends Base
 {
-    // --
+    /**
+     * Make View from container
+     *
+     * @return object
+     */
+    public function getViewEngine(): ViewInterface
+    {
+        return $this->container->make(View::class);
+    }
 }

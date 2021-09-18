@@ -2,12 +2,6 @@
 
 namespace TinyBlocks\Contracts;
 
-/**
- * Asset Interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface AssetInterface
 {
     public function getName(): string;

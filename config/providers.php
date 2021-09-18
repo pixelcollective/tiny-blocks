@@ -1,53 +1,40 @@
 <?php
 
-use TinyBlocks\App;
-use TinyBlocks\Block;
-use TinyBlocks\View;
-use TinyBlocks\Asset;
-use TinyBlocks\Assets;
-use TinyBlocks\Registrar;
-use Psr\Container\ContainerInterface;
+use Psr\Container\ContainerInterface as Container;
 
+/*
+|--------------------------------------------------------------------------
+| Providers
+|--------------------------------------------------------------------------
+|
+| The following class definitions are used by the core classes when
+| registering blocks and rendering views. Here you may register your own
+| class definitions or substitute in alternative implmentations of
+| core services (for example: using Illuminate\View instead of eftect\BladeOne)
+|
+*/
 return [
-    /*
-    |--------------------------------------------------------------------------
-    | Providers
-    |--------------------------------------------------------------------------
-    |
-    | The following definitions are used by the core classes when
-    | registering blocks and rendering views. Here you may register your own
-    | class definitions or substitute in alternative implmentations of
-    | core services (for example: using Illuminate\View instead of eftect\BladeOne)
-    |
-    */
-    
-    /** @see TinyBlocks\Contracts\ApplicationInterface */
-    'application' => function () {
-        return App::getInstance();
+    App::class => function () {
+        return TinyBlocks\App::getInstance();
     },
 
-    /** @see TinyBlocks\Contracts\ViewInterface */
-    'view' => function (ContainerInterface $app) {
-        return new View($app);
+    View::class => function (Container $app) {
+        return new TinyBlocks\View($app);
     },
 
-    /** @see TinyBlocks\Contracts\BlockInterface */
-    'block' => function (ContainerInterface $app) {
-        return new Block($app);
+    Block::class => function (Container $app) {
+        return new TinyBlocks\Block($app);
     },
 
-    /** @see TinyBlocks\Contracts\AssetsInterface */
-    'assets' => function (ContainerInterface $app) {
-        return new Assets($app);
+    Assets::class => function (Container $app) {
+        return new TinyBlocks\Assets($app);
     },
 
-    /** @see TinyBlocks\Contracts\AssetInterface */
-    'asset' => function (ContainerInterface $app) {
-        return new Asset($app);
+    Asset::class => function (Container $app) {
+        return new TinyBlocks\Asset($app);
     },
 
-    /** @see TinyBlocks\Contracts\RegistrarInterface */
-    'registrar' => function (ContainerInterface $app) {
-        return new Registrar($app);
+    Registrar::class => function (Container $app) {
+        return new TinyBlocks\Registrar($app);
     },
 ];

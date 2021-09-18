@@ -19,6 +19,9 @@
     "eftec/bladeone": "^3.24",
     "php-di/php-di": "^6.0"
   },
+  "require-dev": {
+    "roots/wordpress": "dev-master"
+  },
   "autoload": {
     "files": [
       "vendor/illuminate/collections/src/Collect/Support/helpers.php",
@@ -31,6 +34,9 @@
         "./demo"
       ]
     }
+  },
+  "extra": {
+    "wordpress-install-dir": "wordpress"
   },
   "scripts": {
     "lint": [

@@ -3,44 +3,33 @@
 namespace TinyBlocks\Base;
 
 use eftec\bladeone\BladeOne;
+use TinyBlocks\Support\Fluent;
+
 use Psr\Container\ContainerInterface;
 use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\ViewInterface;
 
 use function \register_block_type;
 
-/**
- * Abstract View
- *
- * @package TinyBlocks
- */
 abstract class View implements ViewInterface
 {
     /**
-     * View engine 
-     * 
-     * @var BladeOne 
+     * View engine
      */
     protected BladeOne $blade;
 
-    /** 
+    /**
      * Base directory
-     * 
-     * @var string
      */
     protected string $baseDir;
 
-    /** 
+    /**
      * Cache directory
-     * 
-     * @var string 
      */
     protected string $cacheDir;
 
     /**
      * Debug mode enabled
-     * 
-     * @var bool
      */
     protected bool $debug;
 
@@ -58,14 +47,16 @@ abstract class View implements ViewInterface
 
     /**
      * Register view implementation
-     * 
+     *
      * @param object config
      */
-    public function register(object $config): void
+    public function register(object $config): ViewInterface
     {
         $this->setBaseDir($config->dir);
         $this->setCacheDir($config->cache);
         $this->setDebug($config->debug);
+
+        return $this;
     }
 
     /**
@@ -74,11 +65,13 @@ abstract class View implements ViewInterface
      * @param  ContainerInterface container instance
      * @return void
      */
-    public function boot(): void
+    public function boot(): ViewInterface
     {
         $this->blade = new BladeOne(
-            ...$this->getConfig()
+            ...$this->getConfig()->toArray()
         );
+
+        return $this;
     }
 
     /**
@@ -87,35 +80,33 @@ abstract class View implements ViewInterface
      * @param  BlockInterface block instance
      * @return void
      */
-    public function doRenderCallback(BlockInterface $block): void
+    public function render(BlockInterface $block): void
     {
         register_block_type($block->getName(), [
             'render_callback' => function ($attr, $innerContent) use ($block) {
-                $block->setData($block->with([
-                    'attr'    => (object) $attr,
-                    'content' => $innerContent,
-                ]));
-
                 return $this->blade->run(
                     $block->getTemplate(),
-                    $block->getData()
+                    $block->with([
+                        'attr'    => new Fluent($attr),
+                        'content' => $innerContent,
+                    ])
                 );
             }
         ]);
     }
 
     /**
-     * Get view configuration as a spreadable array.
+     * Get view configuration as an array.
      *
      * @return array bladeone configuration
      */
-    public function getConfig(): array
+    public function getConfig(): Fluent
     {
-        return [
+        return new Fluent([
             $this->getBaseDir(),
             $this->getCacheDir(),
             $this->getDebug()
-        ];
+        ]);
     }
 
     /**

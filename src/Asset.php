@@ -14,5 +14,5 @@ use TinyBlocks\Base\Asset as BaseAsset;
  */
 class Asset extends BaseAsset
 {
-    // --
+    //
 }

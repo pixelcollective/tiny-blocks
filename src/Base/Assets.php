@@ -18,14 +18,14 @@ abstract class Assets implements AssetsInterface
 {
     /**
      * Application container
-     * 
+     *
      * @var ContainerInterface
      */
     public $container;
 
     /**
      * Blocks collection
-     * 
+     *
      * @var Collection
      */
     public $blocks;

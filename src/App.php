@@ -2,28 +2,23 @@
 
 namespace TinyBlocks;
 
-use Illuminate\Support\Collection;
 use DI\ContainerBuilder;
-use Psr\Container\ContainerInterface;
+use DI\Container;
+use Illuminate\Support\Collection;
 use TinyBlocks\Contracts\ApplicationInterface;
 use TinyBlocks\Contracts\AssetsInterface;
 use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface;
 use TinyBlocks\Contracts\ViewInterface;
 
+use TinyBlocks\Registrar;
+
 use function \add_action;
 
-/**
- * Application
- *
- * @package TinyBlocks
- */
 class App implements ApplicationInterface
 {
     /**
-     * Core configuration files
-     *
-     * @var array
+     * Configuration files
      */
     public static $configFiles = [
         'providers',
@@ -31,63 +26,48 @@ class App implements ApplicationInterface
     ];
 
     /**
-     * The application instance.
-     *
-     * @var ApplicationInterface
+     * The application instance
      */
     public static $instance;
 
     /**
-     * The dependency injection container.
-     *
-     * @var ContainerInterface
+     * The DI container
      */
-    public ContainerInterface $container;
+    public Container $container;
 
     /**
      * Blocks collection
-     *
-     * @var Collection
      */
     public Collection $blocks;
 
     /**
      * Registrar
-     *
-     * @var RegistrarInterface
      */
     public RegistrarInterface $registrar;
 
     /**
      * Assets
-     *
-     * @var AssetsInterface
      */
     public AssetsInterface $assets;
 
     /**
      * View
-     *
-     * @var ViewInterface
      */
     public ViewInterface $view;
 
     /**
-     * Class constructor.
+     * Class constructor
      *
      * @param string filepath of override configs
      */
     public function __construct(string $config = null)
     {
-        /** Configure and build the container. */
         $this->container = (new ContainerBuilder)
             ->addDefinitions($this->config($config))
             ->build();
 
-        /** Set config in container instance */
-        $this->container->set('config', $this->config);
+        $this->getContainer()->set('config', $this->config);
 
-        /** Register WordPress hooks. */
         $this->registerHooks();
     }
 
@@ -113,25 +93,15 @@ class App implements ApplicationInterface
      */
     public function initialize(): void
     {
-        $this->initializeBlocks();
-    }
-
-    /**
-     * Initialize blocks as an empty collection.
-     *
-     * @return void
-     */
-    public function initializeBlocks(): void
-    {
         $this->blocks = Collection::make();
     }
 
     /**
      * Get container.
      *
-     * @return ContainerInterface
+     * @return Container
      */
-    public function container(): ContainerInterface
+    public function getContainer(): Container
     {
         return $this->container;
     }
@@ -147,10 +117,8 @@ class App implements ApplicationInterface
     {
         add_action('init', function () {
             if ($this->blocks->isNotEmpty()) {
+                $this->getContainer()->set('blocks', $this->blocks);
                 $this->registrar = $this->makeRegistrar();
-
-                $this->container->set('blocks', $this->blocks);
-
                 $this->registrar->register($this->blocks);
             }
         });
@@ -158,7 +126,6 @@ class App implements ApplicationInterface
         add_action('enqueue_block_editor_assets', function () {
             if ($this->blocks->isNotEmpty()) {
                 $this->assets = $this->makeAssets();
-
                 $this->assets->enqueueEditorAssets($this->blocks);
             }
         });
@@ -166,7 +133,6 @@ class App implements ApplicationInterface
         add_action('wp_enqueue_scripts', function () {
             if ($this->blocks->isNotEmpty()) {
                 $this->assets = $this->makeAssets();
-
                 $this->assets->enqueuePublicAssets($this->blocks);
             }
         });
@@ -179,7 +145,7 @@ class App implements ApplicationInterface
      */
     public function make(): BlockInterface
     {
-        return $this->container->make('block');
+        return $this->getContainer()->make(Block::class);
     }
 
     /**
@@ -189,7 +155,7 @@ class App implements ApplicationInterface
      */
     public function makeRegistrar(): RegistrarInterface
     {
-        return $this->registrar = $this->container->make('registrar');
+        return $this->registrar = $this->getContainer()->make(Registrar::class);
     }
 
     /**
@@ -199,7 +165,7 @@ class App implements ApplicationInterface
      */
     public function makeAssets(): AssetsInterface
     {
-        return $this->assets = $this->container->make('assets');
+        return $this->assets = $this->getContainer()->make(Assets::class);
     }
 
     /**
@@ -211,7 +177,7 @@ class App implements ApplicationInterface
     public function addBlock($block): Collection
     {
         $block = is_string($block)
-            ? new $block($this->container())
+            ? new $block($this->getContainer())
             : $block;
 
         return $this->blocks()->put($block->name, $block);
@@ -243,9 +209,9 @@ class App implements ApplicationInterface
      *
      * @return ViewInterface
      */
-    public function view(string $viewKey): ViewInterface
+    public function view(string $key): ViewInterface
     {
-        return $this->viewInstances->get($viewKey);
+        return $this->view->container->get($key);
     }
 
     /**

@@ -17,42 +17,42 @@ abstract class Block implements BlockInterface
 {
     /**
      * Block name
-     * 
+     *
      * @var string
      */
     public string $name;
 
     /**
      * View template
-     * 
+     *
      * @var string
      */
-    public string $view;
+    public ViewInterface $view;
 
     /**
-     * View instance
-     * 
-     * @var ViewInterface
+     * View instance key
+     *
+     * @var string
      */
-    public ViewInterface $viewInstance;
+    public string $viewKey = 'blocks';
 
     /**
      * Template file
-     * 
+     *
      * @var string
      */
     public string $template;
 
     /**
      * Data
-     * 
+     *
      * @var array
      */
     public array $data;
 
     /**
      * CSS classes
-     * 
+     *
      * @var string
      */
     public string $className;
@@ -88,9 +88,10 @@ abstract class Block implements BlockInterface
      */
     public function initializeAssetCollections(): void
     {
-        Collection::make($this->assetTypes)->each(function ($asset) {
-            $this->$asset = Collection::make();
-        });
+        Collection::make($this->assetTypes)->each(
+            function ($asset) {
+                $this->{$asset} = Collection::make();
+            });
     }
 
     /**
@@ -136,25 +137,26 @@ abstract class Block implements BlockInterface
     }
 
     /**
-     * Get view.
+     * Set view instance
      *
-     * @return string path of view
+     * @param  ViewInterface
+     * @return void
      */
-    public function getView(): string
+    public function setViewKey(string $key): void
     {
-        return $this->view;
+        $this->viewKey = $key;
     }
 
     /**
-     * Set view.
+     * Get view instance
      *
-     * @param  string path of view
-     * @return void
+     * @return string
      */
-    public function setView(string $view): void
+    public function getViewKey(): string
     {
-        $this->view = $view;
+        return $this->viewKey;
     }
+
 
     /**
      * Set view instance
@@ -162,9 +164,9 @@ abstract class Block implements BlockInterface
      * @param  ViewInterface
      * @return void
      */
-    public function setViewInstance(ViewInterface $viewInstance): void
+    public function setView(ViewInterface $view): void
     {
-        $this->viewInstance = $viewInstance;
+        $this->view = $view;
     }
 
     /**
@@ -172,9 +174,9 @@ abstract class Block implements BlockInterface
      *
      * @return ViewInterface
      */
-    public function getViewInstance(): View
+    public function getView(): ViewInterface
     {
-        return $this->viewInstance;
+        return $this->view;
     }
 
     /**
@@ -226,10 +228,7 @@ abstract class Block implements BlockInterface
      *
      * @return Asset
      */
-    public function makeAsset(): Asset
-    {
-        return $this->container->make('asset');
-    }
+    public abstract function makeAsset(): AssetInterface;
 
     /**
      * Get editor scripts

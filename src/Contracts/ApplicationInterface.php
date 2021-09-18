@@ -5,23 +5,17 @@ namespace TinyBlocks\Contracts;
 use Illuminate\Support\Collection;
 use Psr\Container\ContainerInterface;
 use TinyBlocks\Contracts\AssetsInterface as Assets;
-use TinyBlocks\Contracts\BlockInterface as Block;
+use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface as Registrar;
 use TinyBlocks\Contracts\ViewInterface as View;
 
-/**
- * Application interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface ApplicationInterface
 {
-    public function container(): ContainerInterface;
+    public function getContainer(): ContainerInterface;
 
-    public function make(): Block;
+    public function make(): BlockInterface;
 
-    public function block(string $blockName): Block;
+    public function block(string $blockName): BlockInterface;
 
     public function blocks(): Collection;
 

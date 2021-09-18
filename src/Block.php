@@ -2,17 +2,17 @@
 
 namespace TinyBlocks;
 
-use TinyBlocks\Base\Block as BaseBlock;
+use TinyBlocks\Base\Block as Base;
+use TinyBlocks\Asset;
 
-/**
- * Block
- *
- * @since   0.0.1
- * @version 0.3.0
- * @license MIT
- * @author  Kelly Mears <developers@tinypixel.dev>
- */
-class Block extends BaseBlock
+class Block extends Base
 {
-    // --
+    /**
+     * Style asset factory
+     *
+     * @return Asset
+     */
+    public function makeAsset(): Asset {
+        return $this->container->get(Asset::class);
+    }
 }

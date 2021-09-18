@@ -4,12 +4,6 @@ namespace TinyBlocks\Contracts;
 
 use TinyBlocks\Contracts\ViewInterface;
 
-/**
- * Block interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface BlockInterface
 {
     public function initializeAssetCollections(): void;
@@ -26,13 +20,9 @@ interface BlockInterface
 
     public function setData(array $data): void;
 
-    public function getView();
+    public function getView(): ViewInterface;
 
-    public function setView(string $view);
-
-    public function getViewInstance(): ViewInterface;
-
-    public function setViewInstance(ViewInterface $view);
+    public function setView(ViewInterface $view);
 
     public function getTemplate();
 

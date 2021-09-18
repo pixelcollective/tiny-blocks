@@ -2,18 +2,13 @@
 
 namespace TinyBlocks\Contracts;
 
-use TinyBlocks\Contracts\BlockInterface as Block;
+use TinyBlocks\Contracts\BlockInterface;
 
-/**
- * View interface
- *
- * @package TinyPixel\Modules
- */
 interface ViewInterface
 {
-    public function register(object $config): void;
+    public function register(object $config): ViewInterface;
 
-    public function boot();
+    public function boot(): ViewInterface;
 
-    public function doRenderCallback(Block $block): void;
+    public function render(BlockInterface $block): void;
 }
