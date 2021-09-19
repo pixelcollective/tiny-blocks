@@ -105,6 +105,15 @@ abstract class Block implements BlockInterface
     }
 
     /**
+     * Asset factory
+     * 
+     * @return AssetInterface
+     */
+    public function makeAsset(): AssetInterface {
+        return new Asset();
+    }
+
+    /**
      * Data to be passed to block view template.
      *
      * @param  array

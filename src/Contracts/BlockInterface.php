@@ -2,6 +2,7 @@
 
 namespace TinyBlocks\Contracts;
 
+use TinyBlocks\Contracts\AssetInterface;
 use TinyBlocks\Contracts\ViewInterface;
 
 interface BlockInterface
@@ -9,6 +10,8 @@ interface BlockInterface
     public function initializeAssetCollections(): void;
 
     public function setupAssets(): void;
+
+    public function makeAsset(): AssetInterface;
 
     public function with(array $data): array;
 
