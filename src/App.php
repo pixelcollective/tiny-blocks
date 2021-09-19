@@ -257,7 +257,7 @@ class App implements ApplicationInterface
      * @param  array filepath of override configs
      * @return array
      */
-    public function config($userConfig = null): array
+    public function config($userConfig = null): Fluent
     {
         $this->config = Collection::make();
 
@@ -288,8 +288,8 @@ class App implements ApplicationInterface
      * @param  string file
      * @return array
      */
-    public function requireCoreConfigFile(string $file): array
+    public function requireCoreConfigFile(string $file): Fluent
     {
-        return require realpath(__DIR__ . "/../config/{$file}.php");
+        return new Fluent(require realpath(__DIR__ . "/../config/{$file}.php"));
     }
 }

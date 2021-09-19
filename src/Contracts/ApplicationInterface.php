@@ -8,6 +8,7 @@ use TinyBlocks\Contracts\AssetsInterface as Assets;
 use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface as Registrar;
 use TinyBlocks\Contracts\ViewInterface as View;
+use TinyBlocks\Support\Fluent;
 
 interface ApplicationInterface
 {
@@ -31,7 +32,7 @@ interface ApplicationInterface
 
     public function addBlock($block): Collection;
 
-    public function config($configOverride = null): array;
+    public function config($configOverride = null): Fluent;
 
-    public function requireCoreConfigFile(string $file): array;
+    public function requireCoreConfigFile(string $file): Fluent;
 }
