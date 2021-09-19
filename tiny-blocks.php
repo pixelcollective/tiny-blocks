@@ -20,6 +20,8 @@ add_action('plugins_loaded', function () {
     if (!class_exists(Blocks\App::class)) {
         require_once file_exists($autoloader = __DIR__ . '/vendor/autoload.php')
             ? $autoloader
-            : __DIR__ . '/src/autoload.php';
+            : __DIR__ . '/bootstrap/autoload.php';
     }
+
+    do_action('tinypixel/blocks/loaded');
 });

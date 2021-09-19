@@ -25,9 +25,12 @@
   "autoload": {
     "psr-4": {
       "TinyBlocks\\": [
-        "./",
+        "./"
+      ],
+      "TinyBlocks\\Blocks\\": [
         "./src",
-        "./demo"
+        "./config",
+        "./bootstrap"
       ]
     },
     "files": [
