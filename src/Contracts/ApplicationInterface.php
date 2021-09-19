@@ -32,7 +32,7 @@ interface ApplicationInterface
 
     public function addBlock($block): Collection;
 
-    public function config($configOverride = null): Fluent;
+    public function config($configOverride = null): array;
 
-    public function requireCoreConfigFile(string $file): Fluent;
+    public function requireCoreConfigFile(string $file): array;
 }

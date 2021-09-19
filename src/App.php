@@ -12,9 +12,11 @@ use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface;
 use TinyBlocks\Contracts\ViewInterface;
 
-use TinyBlocks\Support\Fluent;
-
 use function \add_action;
+
+if ($autoload = realpath(__DIR__ . '/../../../autoload.php')) {
+    require_once $autoload;
+}
 
 class App implements ApplicationInterface
 {
@@ -24,6 +26,7 @@ class App implements ApplicationInterface
     public static $configFiles = [
         'providers',
         'views',
+        'blocks',
     ];
 
     /**
@@ -70,8 +73,8 @@ class App implements ApplicationInterface
         $this->container
             ->set('config', $this->config);
 
-        $this->container
-            ->get('blocks')->map(function ($block) {
+        Collection::make($this->container
+            ->get('blocks'))->map(function ($block) {
                 $this->addBlock($block);
             });
 
@@ -183,9 +186,7 @@ class App implements ApplicationInterface
      */
     public function addBlock($block): Collection
     {
-        $block = is_string($block)
-            ? new $block($this->getContainer())
-            : $block;
+        $block = new $block($this->getContainer());
 
         return $this->blocks()->put($block->name, $block);
     }
@@ -257,7 +258,7 @@ class App implements ApplicationInterface
      * @param  array filepath of override configs
      * @return array
      */
-    public function config($userConfig = null): Fluent
+    public function config($userConfig = null): array
     {
         $this->config = Collection::make();
 
@@ -267,7 +268,7 @@ class App implements ApplicationInterface
                     return $this->requireCoreConfigFile($file);
                 });
         } else {
-            Collection::make(glob("{$userConfig}/*.php"))
+            $this->config = Collection::make(glob("{$userConfig}/*.php"))
                 ->mapWithKeys(function ($file) {
                     return require $file;
                 });
@@ -279,7 +280,7 @@ class App implements ApplicationInterface
             });
         }
 
-        return new Fluent($this->config);
+        return $this->config->toArray();
     }
 
     /**
@@ -288,8 +289,8 @@ class App implements ApplicationInterface
      * @param  string file
      * @return array
      */
-    public function requireCoreConfigFile(string $file): Fluent
+    public function requireCoreConfigFile(string $file): array
     {
-        return new Fluent(require realpath(__DIR__ . "/../config/{$file}.php"));
+        return require realpath(__DIR__ . "/../config/{$file}.php");
     }
 }
