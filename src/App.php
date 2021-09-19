@@ -21,15 +21,6 @@ if ($autoload = realpath(__DIR__ . '/../../../autoload.php')) {
 class App implements ApplicationInterface
 {
     /**
-     * Configuration files
-     */
-    public static $configFiles = [
-        'providers',
-        'views',
-        'blocks',
-    ];
-
-    /**
      * The application instance
      */
     public static $instance;
@@ -262,25 +253,46 @@ class App implements ApplicationInterface
     {
         $this->config = Collection::make();
 
-        if (!$userConfig) {
-            $this->config = Collection::make(self::$configFiles)
-                ->mapWithKeys(function ($file) {
-                    return $this->requireCoreConfigFile($file);
-                });
-        } else {
-            $this->config = Collection::make(glob("{$userConfig}/*.php"))
-                ->mapWithKeys(function ($file) {
-                    return require $file;
-                });
+        !$userConfig
+            ? $this->assignDefaultConfig()
+            : $this->assignUserConfig($userConfig);
+     
+        $this->projectRoot = $this->config->get('project.root_dir');
 
-            Collection::make(self::$configFiles)->each(function ($file) {
-                if (!$this->config->get($file)) {
-                    $this->config->put($file, $this->requireCoreConfigFile($file));
+        Collection::make($this->config->get('blocks'))->each(
+            function ($block) {
+                $parts = explode($block, '/');
+                $className = array_pop($parts);
+
+                if ($definitionPath = realpath($this->projectRoot . "/src/$className")) {
+                    require($definitionPath);
                 }
-            });
-        }
+            }
+        );
 
         return $this->config->toArray();
+    }
+
+    /**
+     * Assign default config
+     */
+    public function assignDefaultConfig() {
+        $this->config = Collection::make(glob(realpath(__DIR__ . '/../config/*.php')))
+            ->mapWithKeys(function ($file) {
+                return $this->requireCoreConfigFile($file);
+            });
+    }
+
+    /**
+     * Assign user config
+     * 
+     * @param string path to user config dir
+     */
+    public function assignUserConfig(string $userConfDirPath) {
+        $this->config = Collection::make(glob("{$userConfDirPath}/*.php"))
+            ->mapWithKeys(function ($file) {
+                return require $file;
+            });
     }
 
     /**
