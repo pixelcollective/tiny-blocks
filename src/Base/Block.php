@@ -224,13 +224,6 @@ abstract class Block implements BlockInterface
     }
 
     /**
-     * Style asset factory
-     *
-     * @return Asset
-     */
-    public abstract function makeAsset(): AssetInterface;
-
-    /**
      * Get editor scripts
      *
      * @return Collection

@@ -11,8 +11,6 @@ use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface;
 use TinyBlocks\Contracts\ViewInterface;
 
-use TinyBlocks\Registrar;
-
 use function \add_action;
 
 class App implements ApplicationInterface
@@ -66,7 +64,13 @@ class App implements ApplicationInterface
             ->addDefinitions($this->config($config))
             ->build();
 
-        $this->getContainer()->set('config', $this->config);
+        $this->container
+            ->set('config', $this->config);
+
+        $this->container
+            ->get('blocks')->map(function ($block) {
+                $this->addBlock($block);
+            });
 
         $this->registerHooks();
     }
@@ -117,7 +121,7 @@ class App implements ApplicationInterface
     {
         add_action('init', function () {
             if ($this->blocks->isNotEmpty()) {
-                $this->getContainer()->set('blocks', $this->blocks);
+                $this->container->set('blocks', $this->blocks);
                 $this->registrar = $this->makeRegistrar();
                 $this->registrar->register($this->blocks);
             }
@@ -145,7 +149,7 @@ class App implements ApplicationInterface
      */
     public function make(): BlockInterface
     {
-        return $this->getContainer()->make(Block::class);
+        return $this->container->make(Block::class);
     }
 
     /**
@@ -155,7 +159,7 @@ class App implements ApplicationInterface
      */
     public function makeRegistrar(): RegistrarInterface
     {
-        return $this->registrar = $this->getContainer()->make(Registrar::class);
+        return $this->registrar = $this->container->make(Registrar::class);
     }
 
     /**
@@ -165,7 +169,7 @@ class App implements ApplicationInterface
      */
     public function makeAssets(): AssetsInterface
     {
-        return $this->assets = $this->getContainer()->make(Assets::class);
+        return $this->assets = $this->container->make(Assets::class);
     }
 
     /**
@@ -250,17 +254,17 @@ class App implements ApplicationInterface
      * @param  array filepath of override configs
      * @return array
      */
-    public function config($override = null): array
+    public function config($userConfig = null): array
     {
         $this->config = Collection::make();
 
-        if (!$override) {
+        if (!$userConfig) {
             $this->config = Collection::make(self::$configFiles)
                 ->mapWithKeys(function ($file) {
                     return $this->requireCoreConfigFile($file);
                 });
         } else {
-            Collection::make(glob("{$override}/*.php"))
+            Collection::make(glob("{$userConfig}/*.php"))
                 ->mapWithKeys(function ($file) {
                     return require $file;
                 });
@@ -272,7 +276,7 @@ class App implements ApplicationInterface
             });
         }
 
-        return $this->config->toArray();
+        $this->container->set('config', $this->config->toArray());
     }
 
     /**

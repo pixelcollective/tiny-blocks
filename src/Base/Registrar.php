@@ -42,7 +42,7 @@ abstract class Registrar implements RegistrarInterface
 
             $key = $block->getViewKey() ?? 'app';
 
-            if (!$view = $this->getViewInstance($key)) {
+            if (!$this->getViewInstance($key)) {
                 $this->setViewInstance($key, $this->makeViewInstance($key));
             }
 
@@ -80,17 +80,10 @@ abstract class Registrar implements RegistrarInterface
      * Make view
      */
     public function makeViewInstance(string $key): ViewInterface {
-        return $this->getViewEngine()
+        return $this->container->make(View::class)
             ->register((object) $this->container->get('instances')[$key])
             ->boot();
     }
-
-    /**
-     * Make View from container
-     *
-     * @return object
-     */
-    public abstract function getViewEngine(): ViewInterface;
 
     /**
      * Register blocks.
