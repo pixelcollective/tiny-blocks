@@ -1,12 +1,10 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Contracts\ViewInterface;
-use TinyBlocks\Base\Registrar as Base;
-use TinyBlocks\View;
+use TinyPixel\Blocks\Abstract\Registrar as Base;
 
 class Registrar extends Base
 {
-    // 
+    //
 }

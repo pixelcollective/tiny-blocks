@@ -1,18 +1,14 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
 use Psr\Container\ContainerInterface;
-use TinyBlocks\Contracts\ViewInterface;
-use TinyBlocks\Contracts\BlockInterface;
-use TinyBlocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Asset;
 
-/**
- * Abstract Block
- *
- * @package TinyBlocks
- */
 abstract class Block implements BlockInterface
 {
     /**
@@ -34,7 +30,7 @@ abstract class Block implements BlockInterface
      *
      * @var string
      */
-    public string $viewKey = 'blocks';
+    public string $viewKey = 'app';
 
     /**
      * Template file
@@ -106,7 +102,7 @@ abstract class Block implements BlockInterface
 
     /**
      * Asset factory
-     * 
+     *
      * @return AssetInterface
      */
     public function makeAsset(): AssetInterface {
@@ -165,7 +161,6 @@ abstract class Block implements BlockInterface
     {
         return $this->viewKey;
     }
-
 
     /**
      * Set view instance

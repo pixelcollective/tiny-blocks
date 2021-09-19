@@ -1,14 +1,9 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Base\View as BaseView;
+use TinyPixel\Blocks\Abstract\View as BaseView;
 
-/**
- * View
- *
- * @package TinyBlocks
- */
 class View extends BaseView
 {
     // --

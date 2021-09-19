@@ -1,9 +1,9 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-use TinyBlocks\Contracts\AssetInterface;
-use TinyBlocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
 
 interface BlockInterface
 {

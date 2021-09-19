@@ -1,9 +1,5 @@
 <?php
 
-namespace TinyBlocks;
-
-use Psr\Container\ContainerInterface as Container;
-
 return [
    /*
    |--------------------------------------------------------------------------
@@ -60,30 +56,26 @@ return [
    | core services (for example: using Illuminate\View instead of eftect\BladeOne)
    |
    */
-   
+
    'providers' => [
-      App::class => function () {
-         return App::getInstance();
+      View::class => function (Psr\Container\ContainerInterface $app) {
+         return new \TinyPixel\Blocks\View($app);
       },
 
-      View::class => function (Container $app) {
-         return new View($app);
+      Block::class => function (Psr\Container\ContainerInterface $app) {
+         return new \TinyPixel\Blocks\Block($app);
       },
 
-      Block::class => function (Container $app) {
-         return new Block($app);
+      Assets::class => function (Psr\Container\ContainerInterface $app) {
+         return new \TinyPixel\Blocks\Assets($app);
       },
 
-      Assets::class => function (Container $app) {
-         return new Assets($app);
+      Asset::class => function (Psr\Container\ContainerInterface $app) {
+         return new \TinyPixel\Blocks\Asset($app);
       },
 
-      Asset::class => function (Container $app) {
-         return new Asset($app);
-      },
-
-      Registrar::class => function (Container $app) {
-         return new Registrar($app);
+      Registrar::class => function (Psr\Container\ContainerInterface $app) {
+         return new \TinyPixel\Blocks\Registrar($app);
       },
    ],
 ];

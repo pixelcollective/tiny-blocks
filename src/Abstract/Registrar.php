@@ -1,12 +1,13 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
 use Psr\Container\ContainerInterface;
-use TinyBlocks\Contracts\BlockInterface;
-use TinyBlocks\Contracts\ViewInterface;
-use TinyBlocks\Contracts\RegistrarInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\View;
+use TinyPixel\Blocks\Contracts\RegistrarInterface;
 
 abstract class Registrar implements RegistrarInterface
 {
@@ -25,7 +26,8 @@ abstract class Registrar implements RegistrarInterface
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->views = new Collection();
+        $this->blocks = Collection::make($this->container->get('blocks'));
+        $this->views =  Collection::make($this->container->get('views'));
     }
 
     /**
@@ -35,21 +37,23 @@ abstract class Registrar implements RegistrarInterface
      */
     public function initialize(): RegistrarInterface
     {
-        $this->container->get('blocks')->map(function (BlockInterface | string $block) {
-            $block = is_string($block)
-                ? new $block($this->container)
-                : $block;
+        $this->blocks->map(
+            function (BlockInterface | string $block) {
+                $block = is_string($block)
+                    ? new $block($this->container)
+                    : $block;
 
-            $key = $block->getViewKey() ?? 'app';
+                $key = $block->getViewKey();
 
-            if (!$this->getViewInstance($key)) {
-                $this->setViewInstance($key, $this->makeViewInstance($key));
+                if (!$this->viewInstanceIsRegistered($key)) {
+                    $this->setViewInstance($key, $this->makeViewInstance($key));
+                }
+
+                $block->setView($this->getViewInstance($key));
+
+                return $block;
             }
-
-            $block->setView($this->getViewInstance($key));
-
-            return $block;
-        });
+        );
 
         return $this;
     }
@@ -59,9 +63,19 @@ abstract class Registrar implements RegistrarInterface
      *
      * @return View or null if none found
      */
-    public function getViewInstance(string $key): ?ViewInterface
+    public function getViewInstance(string $key): array
     {
-        return $this->views->get($key);
+        return $this->container->get('view.instances')[$key];
+    }
+
+    /**
+     * Get View instance
+     *
+     * @return View or null if none found
+     */
+    public function viewInstanceIsRegistered(string $key): bool
+    {
+        return array_key_exists($key, $this->container->get('view.instances'));
     }
 
     /**
@@ -73,7 +87,7 @@ abstract class Registrar implements RegistrarInterface
      */
     public function setViewInstance(string $key, ViewInterface $view): void
     {
-        $this->views->put($key, $view);
+        $this->container->add("view.instances", $key,  $view);
     }
 
     /**
@@ -81,7 +95,7 @@ abstract class Registrar implements RegistrarInterface
      */
     public function makeViewInstance(string $key): ViewInterface {
         return $this->container->make(View::class)
-            ->register((object) $this->container->get('instances')[$key])
+            ->register((object) $this->container->get('views')[$key])
             ->boot();
     }
 
@@ -94,7 +108,7 @@ abstract class Registrar implements RegistrarInterface
      */
     public function register(): RegistrarInterface
     {
-        $this->initialize()->container->get('blocks')->each(
+        $this->initialize()->blocks->each(
             function (Block $block) {;
                 $block->getView()->render($block);
             }

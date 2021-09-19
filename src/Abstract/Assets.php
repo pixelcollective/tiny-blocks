@@ -1,19 +1,14 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
 use Psr\Container\ContainerInterface;
-use TinyBlocks\Contracts\AssetsInterface;
+use TinyPixel\Blocks\Contracts\AssetsInterface;
 
 use function \wp_enqueue_script;
 use function \wp_enqueue_style;
 
-/**
- * Abstract Assets
- *
- * @package TinyBlocks
- */
 abstract class Assets implements AssetsInterface
 {
     /**
@@ -38,8 +33,7 @@ abstract class Assets implements AssetsInterface
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-
-        $this->blocks = Collection::make();
+        $this->blocks = Collection::make($this->container->get('blocks'));
     }
 
     /**
@@ -48,7 +42,7 @@ abstract class Assets implements AssetsInterface
      * @param Collection
      * @return void
      */
-    public function enqueueEditorAssets(Collection $blocks): void
+    public function enqueueEditorAssets(Collection $blocks): Assets
     {
         $blocks->each(function ($block) {
             $block->editorScripts->each(function ($script) {
@@ -59,15 +53,17 @@ abstract class Assets implements AssetsInterface
                 $this->enqueueStyle($style);
             });
         });
+
+        return $this;
     }
 
     /**
      * Enqueue public assets.
      *
      * @param  Collection
-     * @return void
+     * @return Assets
      */
-    public function enqueuePublicAssets(Collection $blocks): void
+    public function enqueuePublicAssets(Collection $blocks): Assets
     {
         $blocks->each(function ($block) {
             $block->publicScripts->each(function ($script) {
@@ -78,6 +74,8 @@ abstract class Assets implements AssetsInterface
                 $this->enqueueStyle($style);
             });
         });
+
+        return $this;
     }
 
     /**

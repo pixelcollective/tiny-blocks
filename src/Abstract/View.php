@@ -1,13 +1,13 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use eftec\bladeone\BladeOne;
-use TinyBlocks\Support\Fluent;
+use TinyPixel\Blocks\Support\Fluent;
 
 use Psr\Container\ContainerInterface;
-use TinyBlocks\Contracts\BlockInterface;
-use TinyBlocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
 
 use function \register_block_type;
 

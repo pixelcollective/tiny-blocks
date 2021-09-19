@@ -1,8 +1,8 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-use TinyBlocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
 
 interface ViewInterface
 {

@@ -1,18 +1,11 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
 use Illuminate\Support\Collection;
 
-/**
- * Assets Interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface AssetsInterface
 {
-    public function enqueueEditorAssets(Collection $blocks);
-
-    public function enqueuePublicAssets(Collection $blocks);
+    public function enqueueEditorAssets(Collection $blocks): AssetsInterface;
+    public function enqueuePublicAssets(Collection $blocks): AssetsInterface;
 }

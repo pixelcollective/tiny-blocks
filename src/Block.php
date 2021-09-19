@@ -1,8 +1,8 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Base\Block as Base;
+use TinyPixel\Blocks\Abstract\Block as Base;
 
 class Block extends Base
 {

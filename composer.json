@@ -29,7 +29,10 @@
         "./src",
         "./demo"
       ]
-    }
+    },
+    "files": [
+      "./tiny-blocks.php"
+    ]
   },
   "extra": {
     "wordpress-install-dir": "wordpress"

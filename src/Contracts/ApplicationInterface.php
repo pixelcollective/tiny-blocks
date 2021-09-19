@@ -1,38 +1,18 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
 use Illuminate\Support\Collection;
 use Psr\Container\ContainerInterface;
-use TinyBlocks\Contracts\AssetsInterface as Assets;
-use TinyBlocks\Contracts\BlockInterface;
-use TinyBlocks\Contracts\RegistrarInterface as Registrar;
-use TinyBlocks\Contracts\ViewInterface as View;
-use TinyBlocks\Support\Fluent;
+use TinyPixel\Blocks\Contracts\BlockInterface;
 
 interface ApplicationInterface
 {
+    public function main(string $config): void;
+
     public function getContainer(): ContainerInterface;
 
-    public function make(): BlockInterface;
+    public function collect(string $key): Collection;
 
-    public function block(string $blockName): BlockInterface;
-
-    public function blocks(): Collection;
-
-    public function makeRegistrar(): Registrar;
-
-    public function registrar(): Registrar;
-
-    public function makeAssets(): Assets;
-
-    public function assets(): Assets;
-
-    public function view(string $viewKey): View;
-
-    public function addBlock($block): Collection;
-
-    public function config($configOverride = null): array;
-
-    public function requireCoreConfigFile(string $file): array;
+    public function getBlock(string $key): BlockInterface;
 }

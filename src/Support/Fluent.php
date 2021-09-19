@@ -1,6 +1,6 @@
 <?php
 
-namespace TinyBlocks\Support;
+namespace TinyPixel\Blocks\Support;
 
 use ArrayAccess;
 use Illuminate\Contracts\Support\Arrayable;

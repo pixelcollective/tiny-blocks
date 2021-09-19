@@ -1,6 +1,6 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
 interface AssetInterface
 {

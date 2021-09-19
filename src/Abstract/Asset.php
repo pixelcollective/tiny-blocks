@@ -1,14 +1,9 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
-use TinyBlocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
 
-/**
- * Abstract Asset
- *
- * @package TinyBlocks
- */
 abstract class Asset implements AssetInterface
 {
     /**

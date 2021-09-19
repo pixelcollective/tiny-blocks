@@ -1,29 +1,26 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
 use DI\ContainerBuilder;
 use DI\Container;
 use Illuminate\Support\Collection;
-
-use TinyBlocks\Contracts\ApplicationInterface;
-use TinyBlocks\Contracts\AssetsInterface;
-use TinyBlocks\Contracts\BlockInterface;
-use TinyBlocks\Contracts\RegistrarInterface;
-use TinyBlocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\ApplicationInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
 
 use function \add_action;
-
-if ($autoload = realpath(__DIR__ . '/../../../autoload.php')) {
-    require_once $autoload;
-}
 
 class App implements ApplicationInterface
 {
     /**
      * The application instance
      */
-    public static $instance;
+    public static ApplicationInterface $instance;
+
+    /**
+     * The DI container builder
+     */
+    public ContainerBuilder $builder;
 
     /**
      * The DI container
@@ -31,45 +28,10 @@ class App implements ApplicationInterface
     public Container $container;
 
     /**
-     * Blocks collection
+     * Constructor
      */
-    public Collection $blocks;
-
-    /**
-     * Registrar
-     */
-    public RegistrarInterface $registrar;
-
-    /**
-     * Assets
-     */
-    public AssetsInterface $assets;
-
-    /**
-     * View
-     */
-    public ViewInterface $view;
-
-    /**
-     * Class constructor
-     *
-     * @param string filepath of override configs
-     */
-    public function __construct(string $config = null)
-    {
-        $this->container = (new ContainerBuilder)
-            ->addDefinitions($this->config($config))
-            ->build();
-
-        $this->container
-            ->set('config', $this->config);
-
-        Collection::make($this->container
-            ->get('blocks'))->map(function ($block) {
-                $this->addBlock($block);
-            });
-
-        $this->registerHooks();
+    public function __construct() {
+        $this->builder = new ContainerBuilder();
     }
 
     /**
@@ -78,23 +40,26 @@ class App implements ApplicationInterface
      * @param  string filepath of override configs
      * @return ApplicationInterface
      */
-    public static function getInstance(string $config = null): ApplicationInterface
+    public static function getInstance(): ApplicationInterface
     {
         if (!self::$instance) {
-            self::$instance = new App($config);
+            self::$instance = new App();
         }
 
         return self::$instance;
     }
 
     /**
-     * Initialize instance.
+     * Main
      *
      * @return void
      */
-    public function initialize(): void
+    public function main(string $config): void
     {
-        $this->blocks = Collection::make();
+        $this->builder->addDefinitions($config);
+        $this->container = $this->builder->build();
+
+        $this->registerHooks();
     }
 
     /**
@@ -117,69 +82,35 @@ class App implements ApplicationInterface
     public function registerHooks(): void
     {
         add_action('init', function () {
-            if ($this->blocks->isNotEmpty()) {
-                $this->container->set('blocks', $this->blocks);
-                $this->registrar = $this->makeRegistrar();
-                $this->registrar->register($this->blocks);
+            if ($this->collect('blocks')->isNotEmpty()) {
+                $this->container->get(RegistrarInterface::class)
+                    ->register($this->container);
             }
         });
 
         add_action('enqueue_block_editor_assets', function () {
-            if ($this->blocks->isNotEmpty()) {
-                $this->assets = $this->makeAssets();
-                $this->assets->enqueueEditorAssets($this->blocks);
+            if ($this->collect('blocks')->isNotEmpty()) {
+                $this->container->get(AssetsInterface::class)
+                    ->enqueueEditorAssets($this->collect('blocks'));
             }
         });
 
         add_action('wp_enqueue_scripts', function () {
-            if ($this->blocks->isNotEmpty()) {
-                $this->assets = $this->makeAssets();
-                $this->assets->enqueuePublicAssets($this->blocks);
+            if ($this->collect('blocks')->isNotEmpty()) {
+                $this->container->get(AssetsInterface::class)
+                    ->enqueuePublicAssets($this->collect('blocks'));
             }
         });
     }
 
     /**
-     * Make a block instance
+     * Get the collection of blocks
      *
-     * @return BlockInterface
-     */
-    public function make(): BlockInterface
-    {
-        return $this->container->make(Block::class);
-    }
-
-    /**
-     * Instantiate registrar
-     *
-     * @return RegistrarInterface
-     */
-    public function makeRegistrar(): RegistrarInterface
-    {
-        return $this->registrar = $this->container->make(Registrar::class);
-    }
-
-    /**
-     * Instantiate assets manager
-     *
-     * @return AssetsInterface
-     */
-    public function makeAssets(): AssetsInterface
-    {
-        return $this->assets = $this->container->make(Assets::class);
-    }
-
-    /**
-     * Add a block instance
-     *
-     * @param  BlockInterface
      * @return Collection
      */
-    public function addBlock($block): Collection
+    public function collect(string $key): Collection
     {
-        $block = new $block($this->getContainer());
-
-        return $this->blocks()->put($block->name, $block);
+        return Collection::make($this->container->get($key));
     }
 
     /**
@@ -188,121 +119,8 @@ class App implements ApplicationInterface
      * @param  string block name
      * @return BlockInterface
      */
-    public function block(string $blockName): Block
+    public function getBlock(string $blockName): Block
     {
-        return $this->blocks()->get($blockName);
-    }
-
-    /**
-     * Get the collection of blocks
-     *
-     * @return Collection
-     */
-    public function blocks(): Collection
-    {
-        return $this->blocks;
-    }
-
-    /**
-     * Get view provider
-     *
-     * @return ViewInterface
-     */
-    public function view(string $key): ViewInterface
-    {
-        return $this->view->container->get($key);
-    }
-
-    /**
-     * Get registrar
-     *
-     * @return RegistrarInterface
-     */
-    public function registrar(): RegistrarInterface
-    {
-        return $this->registrar;
-    }
-
-    /**
-     * Get assets manager
-     *
-     * @return AssetsInterface
-     */
-    public function assets(): AssetsInterface
-    {
-        return $this->assets;
-    }
-
-    /**
-     * Get config
-     *
-     * @return Collection
-     */
-    public function getConfig()
-    {
-        return $this->config;
-    }
-
-    /**
-     * Adds configuration to container.
-     *
-     * @param  array filepath of override configs
-     * @return array
-     */
-    public function config($userConfig = null): array
-    {
-        $this->config = Collection::make();
-
-        !$userConfig
-            ? $this->assignDefaultConfig()
-            : $this->assignUserConfig($userConfig);
-     
-        $this->projectRoot = $this->config->get('project.root_dir');
-
-        Collection::make($this->config->get('blocks'))->each(
-            function ($block) {
-                $parts = explode($block, '/');
-                $className = array_pop($parts);
-
-                if ($definitionPath = realpath($this->projectRoot . "/src/$className")) {
-                    require($definitionPath);
-                }
-            }
-        );
-
-        return $this->config->toArray();
-    }
-
-    /**
-     * Assign default config
-     */
-    public function assignDefaultConfig() {
-        $this->config = Collection::make(glob(realpath(__DIR__ . '/../config/*.php')))
-            ->mapWithKeys(function ($file) {
-                return $this->requireCoreConfigFile($file);
-            });
-    }
-
-    /**
-     * Assign user config
-     * 
-     * @param string path to user config dir
-     */
-    public function assignUserConfig(string $userConfDirPath) {
-        $this->config = Collection::make(glob("{$userConfDirPath}/*.php"))
-            ->mapWithKeys(function ($file) {
-                return require $file;
-            });
-    }
-
-    /**
-     * Require core configuration file
-     *
-     * @param  string file
-     * @return array
-     */
-    public function requireCoreConfigFile(string $file): array
-    {
-        return require realpath(__DIR__ . "/../config/{$file}.php");
+        return $this->collect('blocks')->get($blockName);
     }
 }
