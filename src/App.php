@@ -5,11 +5,14 @@ namespace TinyBlocks;
 use DI\ContainerBuilder;
 use DI\Container;
 use Illuminate\Support\Collection;
+
 use TinyBlocks\Contracts\ApplicationInterface;
 use TinyBlocks\Contracts\AssetsInterface;
 use TinyBlocks\Contracts\BlockInterface;
 use TinyBlocks\Contracts\RegistrarInterface;
 use TinyBlocks\Contracts\ViewInterface;
+
+use TinyBlocks\Support\Fluent;
 
 use function \add_action;
 
@@ -276,7 +279,7 @@ class App implements ApplicationInterface
             });
         }
 
-        $this->container->set('config', $this->config->toArray());
+        return new Fluent($this->config);
     }
 
     /**
