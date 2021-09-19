@@ -1,6 +1,6 @@
 <?php
 
-namespace TinyPixel\Blocks;
+namespace TinyPixel;
 
 spl_autoload_register(function ($className) {
     if (strpos($className, __NAMESPACE__) !== 0) {

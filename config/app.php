@@ -58,23 +58,23 @@ return [
    */
 
    'providers' => [
-      View::class => function (Psr\Container\ContainerInterface $app) {
+      \TinyPixel\Blocks\View::class => function (Psr\Container\ContainerInterface $app) {
          return new \TinyPixel\Blocks\View($app);
       },
 
-      Block::class => function (Psr\Container\ContainerInterface $app) {
+      \TinyPixel\Blocks\Block::class => function (Psr\Container\ContainerInterface $app) {
          return new \TinyPixel\Blocks\Block($app);
       },
 
-      Assets::class => function (Psr\Container\ContainerInterface $app) {
+      \TinyPixel\Blocks\Assets::class => function (Psr\Container\ContainerInterface $app) {
          return new \TinyPixel\Blocks\Assets($app);
       },
 
-      Asset::class => function (Psr\Container\ContainerInterface $app) {
+      \TinyPixel\Blocks\Asset::class => function (Psr\Container\ContainerInterface $app) {
          return new \TinyPixel\Blocks\Asset($app);
       },
 
-      Registrar::class => function (Psr\Container\ContainerInterface $app) {
+      \TinyPixel\Blocks\Registrar::class => function (Psr\Container\ContainerInterface $app) {
          return new \TinyPixel\Blocks\Registrar($app);
       },
    ],

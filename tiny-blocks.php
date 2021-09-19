@@ -16,6 +16,8 @@
 
 namespace TinyPixel;
 
+require_once __DIR__ . '/autoload.php';
+
 add_action('plugins_loaded', function () {
     if (!class_exists(Blocks\App::class)) {
         require_once file_exists($autoloader = __DIR__ . '/vendor/autoload.php')
