@@ -3,7 +3,6 @@
 namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface;
 use TinyPixel\Blocks\Contracts\ViewInterface;
 use TinyPixel\Blocks\Contracts\BlockInterface;
 use TinyPixel\Blocks\Contracts\AssetInterface;
@@ -17,6 +16,13 @@ abstract class Block implements BlockInterface
      * @var string
      */
     public string $name;
+
+    /**
+     * Block domain
+     *
+     * @var string
+     */
+    public string $domain;
 
     /**
      * View template
@@ -54,6 +60,14 @@ abstract class Block implements BlockInterface
     public string $className;
 
     /**
+     * Editor scripts
+     */
+    public $editorScripts;
+    public $editorStyles;
+    public $publicScripts;
+    public $publicStyles;
+
+    /**
      * Asset types
      */
     public $assetTypes = [
@@ -66,28 +80,56 @@ abstract class Block implements BlockInterface
     /**
      * Class constructor.
      *
-     * @param ContainerInterface
+     * @param Collection
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Collection $container)
     {
         $this->container = $container;
 
-        $this->initializeAssetCollections();
+        $this->domain = $this->container->get('project')['domain'];
 
-        $this->setupAssets();
+        $this->setName($this->makeName());
+
+        $this->setClassName(
+            'wp-block-' . str_replace('/', '-', $this->withDomain($this->name)));
+
+        if (!isset($this->template)) {
+            $this->setTemplate($this->name . '/block.blade.php');
+        }
+
+        Collection::make($this->assetTypes)->each(
+            function ($asset) {
+                $this->{$asset} = Collection::make($this->{$asset});
+            }
+        );
+
+        $this->build();
     }
 
     /**
-     * Initialize asset collections
-     *
-     * @return void
+     * Make name
      */
-    public function initializeAssetCollections(): void
-    {
-        Collection::make($this->assetTypes)->each(
-            function ($asset) {
-                $this->{$asset} = Collection::make();
-            });
+    public function makeName() {
+        return strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '-$0', $this->class())
+        );
+    }
+
+    /**
+     * Class
+     */
+    public function class() {
+        $classname = get_class($this);
+        $parts = explode('\\', $classname);
+
+        return array_pop($parts);
+    }
+
+    /**
+     * Prepend domain
+     */
+    public function withDomain(string $input): string {
+        return $this->domain . '/' . $input;
     }
 
     /**
@@ -95,18 +137,22 @@ abstract class Block implements BlockInterface
      *
      * @return void
      */
-    public function setupAssets(): void
+    public function build(): void
     {
         return;
     }
 
     /**
-     * Asset factory
+     * Make asset instance
      *
-     * @return AssetInterface
+     * @return Asset
      */
-    public function makeAsset(): AssetInterface {
-        return new Asset();
+    public function makeAsset(string $ident): Asset
+    {
+        $assetObj = $this->container->get('providers')['asset']($this->container);
+        $assetObj->setName($this->withDomain($this->name . '/' . $ident));
+
+        return $assetObj;
     }
 
     /**
@@ -136,9 +182,11 @@ abstract class Block implements BlockInterface
      * @param  string name
      * @return void
      */
-    public function setName(string $name): void
+    public function setName(string $name): BlockInterface
     {
         $this->name = $name;
+
+        return $this;
     }
 
     /**
@@ -168,9 +216,11 @@ abstract class Block implements BlockInterface
      * @param  ViewInterface
      * @return void
      */
-    public function setView(ViewInterface $view): void
+    public function setView(ViewInterface $view): BlockInterface
     {
         $this->view = $view;
+
+        return $this;
     }
 
     /**
@@ -188,7 +238,7 @@ abstract class Block implements BlockInterface
      *
      * @return string
      */
-    public function getTemplate(): string
+    public function getTemplate(): string|bool
     {
         return $this->template;
     }
@@ -222,9 +272,11 @@ abstract class Block implements BlockInterface
      * @param  string block data
      * @return void
      */
-    public function setData(array $data): void
+    public function setData(array $data): BlockInterface
     {
         $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -321,8 +373,10 @@ abstract class Block implements BlockInterface
      * @param  string
      * @return string
      */
-    public function setClassName(string $className): void
+    public function setClassName(string $className): BlockInterface
     {
         $this->className = $className;
+
+        return $this;
     }
 }

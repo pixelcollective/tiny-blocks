@@ -1,24 +1,21 @@
-// @wordpress
 import { __ } from "@wordpress/i18n";
 import { registerBlockType } from "@wordpress/blocks";
 import { InnerBlocks } from "@wordpress/block-editor";
 
-// components
 import { edit } from "./components/edit";
 
-// registration
 registerBlockType(`tinyblocks/demo`, {
   title: __(`Block`, `tiny-pixel`),
   category: `common`,
   icon: `hammer`,
   attributes: {
     heading: {
-      type: `string`
-    }
+      type: `string`,
+    },
   },
   supports: {
-    align: true
+    align: true,
   },
   edit,
-  save: () => <InnerBlocks.Content />
+  save: () => <InnerBlocks.Content />,
 });

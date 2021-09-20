@@ -35,7 +35,7 @@ return [
       'app' => [
          'dir'   => realpath(__DIR__ . '/../resources/views/'),
          'cache' => $cachePath,
-         'debug' => 0,
+         'debug' => false,
       ],
    ],
 
@@ -49,6 +49,7 @@ return [
    */
 
    'blocks' => [
+      \Foo\Demo::class,
    ],
 
    /*

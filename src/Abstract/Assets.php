@@ -3,7 +3,6 @@
 namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface;
 use TinyPixel\Blocks\Contracts\AssetsInterface;
 
 use function \wp_enqueue_script;
@@ -14,26 +13,18 @@ abstract class Assets implements AssetsInterface
     /**
      * Application container
      *
-     * @var ContainerInterface
+     * @var Collection
      */
     public $container;
 
     /**
-     * Blocks collection
-     *
-     * @var Collection
-     */
-    public $blocks;
-
-    /**
      * Class constructor.
      *
-     * @param ContainerInterface
+     * @param Collection
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Collection $container)
     {
         $this->container = $container;
-        $this->blocks = Collection::make($this->container->get('blocks'));
     }
 
     /**

@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.0
+
+- Overhauled to work with 5.8.0.
+
 ## 0.9.0
 
 ### New

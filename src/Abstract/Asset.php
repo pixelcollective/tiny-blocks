@@ -42,6 +42,14 @@ abstract class Asset implements AssetInterface
     public $manifest;
 
     /**
+     * Class constructor
+     */
+    public function __construct($container)
+    {
+        $this->container = $container;
+    }
+
+    /**
      * Get asset name
      *
      * @return string
@@ -82,7 +90,7 @@ abstract class Asset implements AssetInterface
      */
     public function setUrl(string $url): AssetInterface
     {
-        $this->url = $url;
+        $this->url = $this->container->get('project')['base_url'] . $this->container->get('project')['dist'] . '/' . $url;
 
         return $this;
     }
@@ -151,8 +159,10 @@ abstract class Asset implements AssetInterface
      */
     public function setManifest(string $manifest): AssetInterface
     {
-        if (file_exists($manifest)) {
-            $this->manifest = (object) require $manifest;
+        $path = $this->container->get('project')['base_path'] . '/dist/' . $manifest;
+
+        if (file_exists($path)) {
+            $this->manifest = (object) require $path;
         }
 
         return $this;

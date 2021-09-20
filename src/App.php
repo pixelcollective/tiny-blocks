@@ -2,11 +2,9 @@
 
 namespace TinyPixel\Blocks;
 
-use DI\ContainerBuilder;
-use DI\Container;
 use Illuminate\Support\Collection;
 use TinyPixel\Blocks\Contracts\ApplicationInterface;
-use TinyPixel\Blocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Support\Fluent;
 
 use function \add_action;
 
@@ -18,20 +16,15 @@ class App implements ApplicationInterface
     public static ApplicationInterface $instance;
 
     /**
-     * The DI container builder
-     */
-    public ContainerBuilder $builder;
-
-    /**
      * The DI container
      */
-    public Container $container;
+    public Collection $container;
 
     /**
      * Constructor
      */
     public function __construct() {
-        $this->builder = new ContainerBuilder();
+        // ✨
     }
 
     /**
@@ -56,20 +49,54 @@ class App implements ApplicationInterface
      */
     public function main(string $config): void
     {
-        $this->builder->addDefinitions($config);
-        $this->container = $this->builder->build();
-
+        $this->makeContainer($config);
         $this->registerHooks();
     }
 
     /**
-     * Get container.
      *
-     * @return Container
      */
-    public function getContainer(): Container
+    public function makeContainer(string $configDir): void
     {
-        return $this->container;
+        $this->container = Collection::make(
+            require_once $configDir . "/app.php"
+        );
+
+        /**
+         * Instantiate factory providers
+         */
+        $this->collect('providers')->each(
+            function ($factory, $name) {
+                $this->container->put($name, $factory($this->container));
+            }
+        );
+
+        /**
+         * Instantiate views
+         */
+        $this->container->put('views',
+            $this->collect('views')->map(function (array $properties) {
+                return $this->make('view')
+                    ->boot(new Fluent($properties));
+            })->toArray()
+        );
+
+        /**
+         * Instantiate blocks
+         */
+        $this->container->put('blocks',
+            $this->collect('blocks')->map(function (string $block) {
+                $instance = new $block($this->container);
+
+                if ($instance->viewKey) {
+                    $instance->setView(
+                        $this->get('views')[$instance->viewKey]
+                    );
+                }
+
+                return $instance;
+            })
+        );
     }
 
     /**
@@ -83,24 +110,25 @@ class App implements ApplicationInterface
     {
         add_action('init', function () {
             if ($this->collect('blocks')->isNotEmpty()) {
-                $this->container->get(RegistrarInterface::class)
-                    ->register($this->container);
+                $this->get('registrar')->register($this->container);
             }
         });
 
         add_action('enqueue_block_editor_assets', function () {
             if ($this->collect('blocks')->isNotEmpty()) {
-                $this->container->get(AssetsInterface::class)
+                $this->get('assets')
                     ->enqueueEditorAssets($this->collect('blocks'));
             }
         });
 
         add_action('wp_enqueue_scripts', function () {
             if ($this->collect('blocks')->isNotEmpty()) {
-                $this->container->get(AssetsInterface::class)
+                $this->get('assets')
                     ->enqueuePublicAssets($this->collect('blocks'));
             }
         });
+
+        $this->get('registrar')->register();
     }
 
     /**
@@ -114,13 +142,23 @@ class App implements ApplicationInterface
     }
 
     /**
-     * Get a block instance
-     *
-     * @param  string block name
-     * @return BlockInterface
+     * Liberate a boi from the container
      */
-    public function getBlock(string $blockName): Block
+    public function get(string $key)
     {
-        return $this->collect('blocks')->get($blockName);
+        return $this->container->get($key);
+    }
+
+    /**
+     * Get a service from the container
+     *
+     * @param  string $key
+     * @return mixed
+     */
+    public function make(string $name)
+    {
+        $Service = $this->container->get('providers')[$name];
+
+        return $Service($this->container);
     }
 }

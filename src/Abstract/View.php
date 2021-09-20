@@ -4,8 +4,7 @@ namespace TinyPixel\Blocks\Abstract;
 
 use eftec\bladeone\BladeOne;
 use TinyPixel\Blocks\Support\Fluent;
-
-use Psr\Container\ContainerInterface;
+use Illuminate\Support\Collection;
 use TinyPixel\Blocks\Contracts\BlockInterface;
 use TinyPixel\Blocks\Contracts\ViewInterface;
 
@@ -16,57 +15,45 @@ abstract class View implements ViewInterface
     /**
      * View engine
      */
-    protected BladeOne $blade;
+    public BladeOne $blade;
 
     /**
      * Base directory
      */
-    protected string $baseDir;
+    public string $baseDir;
 
     /**
      * Cache directory
      */
-    protected string $cacheDir;
+    public string $cacheDir;
 
     /**
      * Debug mode enabled
      */
-    protected bool $debug;
+    public bool $debug;
 
     /**
      * Class constructor
      *
-     * @param ContainerInterface
+     * @param Collection
      */
-    public function __construct(ContainerInterface $container)
+    public function __construct(Collection $container)
     {
         $this->container = $container;
-
-        return $this;
-    }
-
-    /**
-     * Register view implementation
-     *
-     * @param object config
-     */
-    public function register(object $config): ViewInterface
-    {
-        $this->setBaseDir($config->dir);
-        $this->setCacheDir($config->cache);
-        $this->setDebug($config->debug);
-
-        return $this;
     }
 
     /**
      * Boot view implementation
      *
-     * @param  ContainerInterface container instance
+     * @param  Collection container instance
      * @return void
      */
-    public function boot(): ViewInterface
+    public function boot(Object $config): ViewInterface
     {
+        $this->setBaseDir($config->dir . '/');
+        $this->setCacheDir($config->cache . '/');
+        $this->setDebug($config->debug);
+
         $this->blade = new BladeOne(
             ...$this->getConfig()->toArray()
         );
@@ -82,17 +69,42 @@ abstract class View implements ViewInterface
      */
     public function render(BlockInterface $block): void
     {
-        register_block_type($block->getName(), [
+        register_block_type($block->withDomain($block->getName()), [
             'render_callback' => function ($attr, $innerContent) use ($block) {
                 return $this->blade->run(
                     $block->getTemplate(),
                     $block->with([
-                        'attr'    => new Fluent($attr),
+                        'id' => uniqid(),
+                        'classname' => $block->getClassName(),
+                        'attr' => $this->transform($attr),
                         'content' => $innerContent,
                     ])
                 );
             }
         ]);
+    }
+
+    /**
+     * Mutate template variables prior to rendering view.
+     *
+     * @param array $attr
+     */
+    public function transform($attr) {
+        $mutate = function($attr) {
+            if(is_string($attr)) {
+                return $attr;
+            }
+
+            if (is_array($attr)) {
+                return (object) $this->transform($attr);
+            }
+
+            return $attr;
+        };
+
+        return (object) Collection::make($attr)->map(
+            $mutate
+        )->toArray();
     }
 
     /**

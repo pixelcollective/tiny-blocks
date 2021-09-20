@@ -25,5 +25,5 @@ add_action('plugins_loaded', function () {
             : __DIR__ . '/bootstrap/autoload.php';
     }
 
-    do_action('tinypixel/blocks/loaded');
+    do_action('tinypixel/blocks/loaded', new Blocks\App());
 });
