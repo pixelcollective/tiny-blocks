@@ -1,18 +1,10 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Base\Registrar as BaseRegistrar;
+use TinyPixel\Blocks\Abstract\Registrar as Base;
 
-/**
- * Registrar
- *
- * @since   0.0.1
- * @version 0.3.0
- * @license MIT
- * @author  Kelly Mears <developers@tinypixel.dev>
- */
-class Registrar extends BaseRegistrar
+class Registrar extends Base
 {
-    // --
+    //
 }

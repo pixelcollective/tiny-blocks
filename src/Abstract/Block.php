@@ -1,54 +1,71 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\ViewInterface as View;
-use TinyBlocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\BlockInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Asset;
 
-/**
- * Abstract Block
- *
- * @package TinyBlocks
- */
 abstract class Block implements BlockInterface
 {
     /**
-     * Block name.
+     * Block name
+     *
      * @var string
      */
-    public $name;
+    public string $name;
 
     /**
-     * View engine.
+     * Block domain
+     *
      * @var string
      */
-    public $view;
+    public string $domain;
 
     /**
-     * View instance.
-     * @var \TinyBlocks\Contracts\ViewInterface
+     * View template
+     *
+     * @var string
      */
-    public $viewInstance;
+    public ViewInterface $view;
+
+    /**
+     * View instance key
+     *
+     * @var string
+     */
+    public string $viewKey = 'app';
 
     /**
      * Template file
+     *
      * @var string
      */
-    public $template;
+    public string $template;
 
     /**
      * Data
+     *
      * @var array
      */
-    public $data;
+    public array $data;
 
     /**
-     * Classname.
+     * CSS classes
+     *
      * @var string
      */
-    public $className;
+    public string $className;
+
+    /**
+     * Editor scripts
+     */
+    public $editorScripts;
+    public $editorStyles;
+    public $publicScripts;
+    public $publicStyles;
 
     /**
      * Asset types
@@ -63,27 +80,56 @@ abstract class Block implements BlockInterface
     /**
      * Class constructor.
      *
-     * @param \Psr\Container\ContainerInterface
+     * @param Collection
      */
-    public function __construct(Container $container)
+    public function __construct(Collection $container)
     {
         $this->container = $container;
 
-        $this->initializeAssetCollections();
+        $this->domain = $this->container->get('project')['domain'];
 
-        $this->setupAssets();
+        $this->setName($this->makeName());
+
+        $this->setClassName(
+            'wp-block-' . str_replace('/', '-', $this->withDomain($this->name)));
+
+        if (!isset($this->template)) {
+            $this->setTemplate($this->name . '/block.blade.php');
+        }
+
+        Collection::make($this->assetTypes)->each(
+            function ($asset) {
+                $this->{$asset} = Collection::make($this->{$asset});
+            }
+        );
+
+        $this->build();
     }
 
     /**
-     * Initialize asset collections
-     *
-     * @return void
+     * Make name
      */
-    public function initializeAssetCollections(): void
-    {
-        Collection::make($this->assetTypes)->each(function ($asset) {
-            $this->$asset = Collection::make();
-        });
+    public function makeName() {
+        return strtolower(
+            preg_replace('/(?<!^)[A-Z]/', '-$0', $this->class())
+        );
+    }
+
+    /**
+     * Class
+     */
+    public function class() {
+        $classname = get_class($this);
+        $parts = explode('\\', $classname);
+
+        return array_pop($parts);
+    }
+
+    /**
+     * Prepend domain
+     */
+    public function withDomain(string $input): string {
+        return $this->domain . '/' . $input;
     }
 
     /**
@@ -91,9 +137,22 @@ abstract class Block implements BlockInterface
      *
      * @return void
      */
-    public function setupAssets(): void
+    public function build(): void
     {
         return;
+    }
+
+    /**
+     * Make asset instance
+     *
+     * @return Asset
+     */
+    public function makeAsset(string $ident): Asset
+    {
+        $assetObj = $this->container->get('providers')['asset']($this->container);
+        $assetObj->setName($this->withDomain($this->name . '/' . $ident));
+
+        return $assetObj;
     }
 
     /**
@@ -123,51 +182,55 @@ abstract class Block implements BlockInterface
      * @param  string name
      * @return void
      */
-    public function setName(string $name): void
+    public function setName(string $name): BlockInterface
     {
         $this->name = $name;
-    }
 
-    /**
-     * Get view.
-     *
-     * @return string path of view
-     */
-    public function getView(): string
-    {
-        return $this->view;
-    }
-
-    /**
-     * Set view.
-     *
-     * @param  string path of view
-     * @return void
-     */
-    public function setView(string $view): void
-    {
-        $this->view = $view;
+        return $this;
     }
 
     /**
      * Set view instance
      *
-     * @param  View
+     * @param  ViewInterface
      * @return void
      */
-    public function setViewInstance(View $viewInstance): void
+    public function setViewKey(string $key): void
     {
-        $this->viewInstance = $viewInstance;
+        $this->viewKey = $key;
     }
 
     /**
      * Get view instance
      *
-     * @return View
+     * @return string
      */
-    public function getViewInstance(): View
+    public function getViewKey(): string
     {
-        return $this->viewInstance;
+        return $this->viewKey;
+    }
+
+    /**
+     * Set view instance
+     *
+     * @param  ViewInterface
+     * @return void
+     */
+    public function setView(ViewInterface $view): BlockInterface
+    {
+        $this->view = $view;
+
+        return $this;
+    }
+
+    /**
+     * Get view instance
+     *
+     * @return ViewInterface
+     */
+    public function getView(): ViewInterface
+    {
+        return $this->view;
     }
 
     /**
@@ -175,7 +238,7 @@ abstract class Block implements BlockInterface
      *
      * @return string
      */
-    public function getTemplate(): string
+    public function getTemplate(): string|bool
     {
         return $this->template;
     }
@@ -184,7 +247,7 @@ abstract class Block implements BlockInterface
      * Set template
      *
      * @param  string $template
-     * @return \TinyPixel\Contracts\BlockInterface
+     * @return BlockInterface
      */
     public function setTemplate(string $template): BlockInterface
     {
@@ -209,25 +272,17 @@ abstract class Block implements BlockInterface
      * @param  string block data
      * @return void
      */
-    public function setData(array $data): void
+    public function setData(array $data): BlockInterface
     {
         $this->data = $data;
-    }
 
-    /**
-     * Style asset factory
-     *
-     * @return Asset
-     */
-    public function makeAsset(): Asset
-    {
-        return $this->container->make('asset');
+        return $this;
     }
 
     /**
      * Get editor scripts
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getEditorScripts(): Collection
     {
@@ -237,7 +292,7 @@ abstract class Block implements BlockInterface
     /**
      * Add editor script
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
     public function addEditorScript(Asset $editorScript): void
@@ -251,7 +306,7 @@ abstract class Block implements BlockInterface
     /**
      * Set editor scripts
      *
-     * @param  \Illuminate\Support\Collection
+     * @param  Collection
      * @return void
      */
     public function setEditorScripts(Collection $editorScripts)
@@ -262,7 +317,7 @@ abstract class Block implements BlockInterface
     /**
      * Get editor styles
      *
-     * @return \Illuminate\Support\Collection
+     * @return Collection
      */
     public function getEditorStyles(): Collection
     {
@@ -272,7 +327,7 @@ abstract class Block implements BlockInterface
     /**
      * Add editor styles
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
     public function addEditorStyle(Asset $editorStyle): void
@@ -283,10 +338,10 @@ abstract class Block implements BlockInterface
     /**
      * Add public styles
      *
-     * @param  \TinyBlocks\Contracts\AssetInterface
+     * @param  AssetInterface
      * @return void
      */
-    public function addPublicStyle(Asset $publicStyle): void
+    public function addPublicStyle(AssetInterface $publicStyle): void
     {
         $this->publicStyles->put($publicStyle->getName(), $publicStyle);
     }
@@ -294,7 +349,7 @@ abstract class Block implements BlockInterface
     /**
      * Set editor styles
      *
-     * @param  \Illuminate\Support\Collection
+     * @param  Collection
      * @return void
      */
     public function setEditorStyles(Collection $editorStyles)
@@ -318,8 +373,10 @@ abstract class Block implements BlockInterface
      * @param  string
      * @return string
      */
-    public function setClassName(string $className): void
+    public function setClassName(string $className): BlockInterface
     {
         $this->className = $className;
+
+        return $this;
     }
 }

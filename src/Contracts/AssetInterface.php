@@ -1,13 +1,7 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-/**
- * Asset Interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface AssetInterface
 {
     public function getName(): string;

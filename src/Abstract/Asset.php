@@ -1,15 +1,9 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
-use Illuminate\Support\Collection;
-use TinyBlocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
 
-/**
- * Abstract Asset
- *
- * @package TinyBlocks
- */
 abstract class Asset implements AssetInterface
 {
     /**
@@ -48,11 +42,11 @@ abstract class Asset implements AssetInterface
     public $manifest;
 
     /**
-     * Class constructor.
+     * Class constructor
      */
-    public function __construct()
+    public function __construct($container)
     {
-        return $this;
+        $this->container = $container;
     }
 
     /**
@@ -69,7 +63,7 @@ abstract class Asset implements AssetInterface
      * Set asset name
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setName(string $name): AssetInterface
     {
@@ -92,11 +86,11 @@ abstract class Asset implements AssetInterface
      * Set asset url
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setUrl(string $url): AssetInterface
     {
-        $this->url = $url;
+        $this->url = $this->container->get('project')['base_url'] . $this->container->get('project')['dist'] . '/' . $url;
 
         return $this;
     }
@@ -115,7 +109,7 @@ abstract class Asset implements AssetInterface
      * Set dependencies
      *
      * @param  array
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setDependencies(array $dependencies): AssetInterface
     {
@@ -138,7 +132,7 @@ abstract class Asset implements AssetInterface
      * Set version
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setVersion(string $version): AssetInterface
     {
@@ -161,12 +155,14 @@ abstract class Asset implements AssetInterface
      * Set manifest.
      *
      * @param  string
-     * @return \TinyBlocks\Contracts\AssetInterface
+     * @return AssetInterface
      */
     public function setManifest(string $manifest): AssetInterface
     {
-        if (file_exists($manifest)) {
-            $this->manifest = (object) require $manifest;
+        $path = $this->container->get('project')['base_path'] . '/dist/' . $manifest;
+
+        if (file_exists($path)) {
+            $this->manifest = (object) require $path;
         }
 
         return $this;

@@ -1,18 +1,10 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Base\Assets as BaseAssets;
+use TinyPixel\Blocks\Abstract\Assets as AbstractAssets;
 
-/**
- * Assets
- *
- * @since   0.0.1
- * @version 0.3.0
- * @license MIT
- * @author  Kelly Mears <developers@tinypixel.dev>
- */
-class Assets extends BaseAssets
+class Assets extends AbstractAssets
 {
     // --
 }

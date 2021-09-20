@@ -1,42 +1,37 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-use \Illuminate\Support\Collection;
-use \Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\ViewInterface;
+use TinyPixel\Blocks\Contracts\AssetInterface;
+use TinyPixel\Blocks\Contracts\ViewInterface;
 
-/**
- * Block interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface BlockInterface
 {
-    public function initializeAssetCollections(): void;
+    public function makeAsset(string $type): AssetInterface;
 
-    public function setupAssets(): void;
+    public function build(): void;
+
+    public function withDomain(string $name): string;
 
     public function with(array $data): array;
 
     public function getName(): string;
 
-    public function setName(string $blockname): void;
+    public function setName(string $blockname): BlockInterface;
 
     public function getData();
 
-    public function setData(array $data): void;
+    public function setData(array $data): BlockInterface;
 
-    public function getView();
+    public function getView(): ViewInterface;
 
-    public function setView(string $view);
-
-    public function getViewInstance(): ViewInterface;
-
-    public function setViewInstance(ViewInterface $view);
+    public function setView(ViewInterface $view): BlockInterface;
 
     public function getTemplate();
 
     public function setTemplate(string $template): BlockInterface;
+
+    public function getClassName();
+
+    public function setClassName(string $template): BlockInterface;
 }

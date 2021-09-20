@@ -1,21 +1,12 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-use \Illuminate\Support\Collection;
-use \Psr\Container\ContainerInterface as Container;
-use \TinyBlocks\Contracts\BlockInterface as Block;
+use TinyPixel\Blocks\Contracts\BlockInterface;
 
-/**
- * View interface
- *
- * @package TinyPixel\Modules
- */
 interface ViewInterface
 {
-    public function register(object $config): void;
+    public function boot(Object $properties): ViewInterface;
 
-    public function boot();
-
-    public function doRenderCallback(Block $block): void;
+    public function render(BlockInterface $block): void;
 }

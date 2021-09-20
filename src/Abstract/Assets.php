@@ -1,49 +1,39 @@
 <?php
 
-namespace TinyBlocks\Base;
+namespace TinyPixel\Blocks\Abstract;
 
 use Illuminate\Support\Collection;
-use Psr\Container\ContainerInterface as Container;
-use TinyBlocks\Contracts\AssetsInterface;
+use TinyPixel\Blocks\Contracts\AssetsInterface;
 
-/**
- * Abstract Assets
- *
- * @package TinyBlocks
- */
+use function \wp_enqueue_script;
+use function \wp_enqueue_style;
+
 abstract class Assets implements AssetsInterface
 {
     /**
      * Application container
-     * @var \Psr\Container\ContainerInterface
+     *
+     * @var Collection
      */
     public $container;
 
     /**
-     * Blocks collection
-     * @var \Illuminate\Support\Collection
-     */
-    public $blocks;
-
-    /**
      * Class constructor.
      *
-     * @param \Psr\Container\ContainerInterface
+     * @param Collection
      */
-    public function __construct(Container $container)
+    public function __construct(Collection $container)
     {
         $this->container = $container;
-
-        $this->blocks = Collection::make();
     }
 
     /**
      * Enqueue editor assets.
      *
-     * @param  \Illuminate\Support\Collection
+     * @param Collection
      * @return void
      */
-    public function enqueueEditorAssets(Collection $blocks): void
+    public function enqueueEditorAssets(Collection $blocks): Assets
     {
         $blocks->each(function ($block) {
             $block->editorScripts->each(function ($script) {
@@ -54,15 +44,17 @@ abstract class Assets implements AssetsInterface
                 $this->enqueueStyle($style);
             });
         });
+
+        return $this;
     }
 
     /**
      * Enqueue public assets.
      *
-     * @param  \Illuminate\Support\Collection
-     * @return void
+     * @param  Collection
+     * @return Assets
      */
-    public function enqueuePublicAssets(Collection $blocks): void
+    public function enqueuePublicAssets(Collection $blocks): Assets
     {
         $blocks->each(function ($block) {
             $block->publicScripts->each(function ($script) {
@@ -73,6 +65,8 @@ abstract class Assets implements AssetsInterface
                 $this->enqueueStyle($style);
             });
         });
+
+        return $this;
     }
 
     /**
@@ -87,7 +81,7 @@ abstract class Assets implements AssetsInterface
             $script->getName(),
             $script->getUrl(),
             $script->getManifest() ? $script->getManifest()->dependencies : $script->getDependencies(),
-            $script->getManifest() ? $script->getManifest()->version      : $script->getVersion(),
+            $script->getManifest() ? $script->getManifest()->version : $script->getVersion(),
         );
     }
 

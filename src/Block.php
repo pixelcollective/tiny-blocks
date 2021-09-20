@@ -1,18 +1,10 @@
 <?php
 
-namespace TinyBlocks;
+namespace TinyPixel\Blocks;
 
-use TinyBlocks\Base\Block as BaseBlock;
+use TinyPixel\Blocks\Abstract\Block as Base;
 
-/**
- * Block
- *
- * @since   0.0.1
- * @version 0.3.0
- * @license MIT
- * @author  Kelly Mears <developers@tinypixel.dev>
- */
-class Block extends BaseBlock
+class Block extends Base
 {
-    // --
+    //
 }

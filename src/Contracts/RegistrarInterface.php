@@ -1,14 +1,8 @@
 <?php
 
-namespace TinyBlocks\Contracts;
+namespace TinyPixel\Blocks\Contracts;
 
-/**
- * Registrar Interface
- *
- * @package TinyBlocks
- * @subpackage Contracts
- */
 interface RegistrarInterface
 {
-    public function register();
+    public function register(): RegistrarInterface;
 }
