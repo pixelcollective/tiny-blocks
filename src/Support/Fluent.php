@@ -14,7 +14,7 @@ class Fluent implements Arrayable, ArrayAccess, Jsonable, JsonSerializable
      *
      * @var array
      */
-    protected $attributes = [];
+    public $attributes = [];
 
     /**
      * Create a new fluent instance.

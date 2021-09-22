@@ -13,19 +13,12 @@ class App implements ApplicationInterface
     /**
      * The application instance
      */
-    public static ApplicationInterface $instance;
+    public static $instance;
 
     /**
      * The DI container
      */
-    public Collection $container;
-
-    /**
-     * Constructor
-     */
-    public function __construct() {
-        // ✨
-    }
+    public $container;
 
     /**
      * Singleton constructor.
