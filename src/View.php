@@ -48,7 +48,7 @@ class View implements ViewInterface
      * @param  Collection container instance
      * @return void
      */
-    public function boot(Object $config): View
+    public function boot(Object $config): ViewInterface
     {
         $this->setBaseDir($config->dir . '/');
         $this->setCacheDir($config->cache . '/');

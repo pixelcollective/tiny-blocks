@@ -33,7 +33,7 @@ class Assets implements AssetsInterface
      * @param Collection
      * @return void
      */
-    public function enqueueEditorAssets(Collection $blocks): Assets
+    public function enqueueEditorAssets(Collection $blocks): AssetsInterface
     {
         $blocks->each(function ($block) {
             $block->editorScripts->each(function ($script) {
@@ -54,7 +54,7 @@ class Assets implements AssetsInterface
      * @param  Collection
      * @return Assets
      */
-    public function enqueuePublicAssets(Collection $blocks): Assets
+    public function enqueuePublicAssets(Collection $blocks): AssetsInterface
     {
         $blocks->each(function ($block) {
             $block->publicScripts->each(function ($script) {
