@@ -1,0 +1,14 @@
+{
+  "name": "demo/project",
+  "type": "wp-plugin",
+  "version": "0.0.0",
+  "description": "Demo project",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7.1",
+    "composer/installers": "v2",
+    "tinypixel/blocks": "1.0.1"
+  }
+}
